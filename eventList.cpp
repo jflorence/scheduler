@@ -1,5 +1,16 @@
 #include "eventList.h"
 
+EventList *EventList::instance = nullptr;
+
+EventList *EventList::getInstance()
+{
+	if (instance == nullptr)
+	{
+		instance = new EventList();
+	}
+	return instance;
+}
+
 Event *EventList::pop()
 {
 	Event *e = list.front();

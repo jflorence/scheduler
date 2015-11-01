@@ -1,30 +1,32 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
-#include "event.h"
+#include <iterator>
 
+class Event;
 
 class Process
 {
 
 private:
 	int pid;
-	/*the bursts are arrays of times spent in the nth burst*/
-	double *cpuBurst;
-	double *ioBurst;
+	double *cpuBurst;/*This is an array of aow*/
+	double *ioBurst;/*This is an array of times spent waiting*/
 	int currentBurst;
 	int nbBursts; /*This is the nb of cpu bursts. there qre n-1 io bursts.*/
 	int priority;
-	static int pidCounter;
 public:
 	Process(int p, int nbBursts, double *cpuBursts, double *ioBursts, int priority = 0);
 	~Process();
 	int getPid(void);
-	void updateBurstTime(double time);
+	void updateCurrentAow(double aow);
 	bool advanceBurst();
-	double getCurrentCpuTime();
+	void decrementBurst();
+	double getCurrentCpuAow();
 	double getCurrentIoTime();
-	static Process *createJob(int pid, double time, double aow/*amount of work*/);	
+	static Process *createJob(int pid, double aow/*amount of work*/);
+	static Process *createProcess(double cpuLambda, double ioLambda);
+	static int getNewPid();
 };
 
 

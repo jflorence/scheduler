@@ -6,19 +6,13 @@
 #include "eventList.h"
 
 
-void scheduleTask(bool preempt)
+void startEventScheduler()
 {
-	
-}
-
-void startEventScheduler(EventList *list)
-{
-	bool keepRunning = true;
+	EventList *list = EventList::getInstance();
 	while(!list->isEmpty())
 	{
 		Event *e = list->pop();
-		bool preempt = e->process(list);
-		scheduleTask(preempt);
+		e->process();
 		delete e;
 	}
 }
@@ -26,15 +20,17 @@ void startEventScheduler(EventList *list)
 
 int main()
 {
-	EventList eventList;	
-	Event *stopEvent = new StopSimulation(100, NULL);
-	eventList.insert(stopEvent);
-
 	std::cout << "Hello!\n";
 	
-	Event *interactive = new NewInteractiveProcess(1, NULL, false);
-	eventList.insert(interactive);
-	startEventScheduler(&eventList);
+	EventList *eventList = EventList::getInstance();;	
+	Event *stopEvent = new StopSimulation(100, NULL, false);
+	eventList->insert(stopEvent);
+
+	
+	Event *interactive = new NewInteractiveProcess(1, NULL, true);
+	eventList->insert(interactive);
+	
+	startEventScheduler();
 
 	return 0;
 }

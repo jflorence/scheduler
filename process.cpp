@@ -1,7 +1,6 @@
 #include "process.h"
-
-
-
+#include "randomGenerator.h"
+#include <iostream>
 
 Process::Process(int p, int nb, double *cpu, double *io, int pri)
 {
@@ -15,12 +14,11 @@ Process::Process(int p, int nb, double *cpu, double *io, int pri)
 
 Process::~Process()
 {
-	delete cpuBurst;
-	delete ioBurst;
+	if (cpuBurst != nullptr)
+		delete cpuBurst;
+	if (ioBurst != nullptr)
+		delete ioBurst;
 }
-
-
-
 
 int Process::getPid()
 {
@@ -28,19 +26,18 @@ int Process::getPid()
 }
 
 
-void Process::updateBurstTime(double t)
-{
-	cpuBurst[currentBurst] = t;
-}
-
 bool Process::advanceBurst()
 {
 	currentBurst++;
-	return currentBurst <= nbBursts;
+	return currentBurst < nbBursts;
 }
 
+void Process::decrementBurst()
+{
+	currentBurst--;
+}
 
-double Process::getCurrentCpuTime()
+double Process::getCurrentCpuAow()
 {
 	return cpuBurst[currentBurst];
 }
@@ -54,15 +51,49 @@ double Process::getCurrentIoTime()
 }
 
 
-
-
-Process *Process::createJob(int pid, double time, double aow)
+Process *Process::createJob(int pid, double aow)
 {
 	double *burst = new double;
 	*burst = aow;
 	Process *process = new Process(pid, 1, burst, nullptr);
 	return process;
 }
+
+
+Process *Process::createProcess(double cpuLambda, double ioLambda)
+{
+	RandomGenerator *gen = RandomGenerator::getRandomGenerator();
+	int nbBursts = 10;
+	double *cpuBurst = new double[nbBursts];
+	double *ioBurst = new double[nbBursts];
+	for (int i = 0; i < nbBursts; i++)
+	{
+		cpuBurst[i] = gen->drawExp(cpuLambda);
+		ioBurst[i] = gen->drawExp(ioLambda);
+		std::cout << "cpuBurst["<<i<<"]: "<<cpuBurst[i]<<"\n";
+		std::cout << "ioBurst["<<i<<"]: "<<ioBurst[i]<<"\n";
+	}
+	Process *p = new Process(Process::getNewPid(), nbBursts, cpuBurst, ioBurst);
+	return p;
+}
+
+
+
+
+int Process::getNewPid()
+{
+	static int pid = 0;
+	return pid++;
+}
+
+
+
+void Process::updateCurrentAow(double aow)
+{
+	cpuBurst[currentBurst] = aow;
+}
+
+
 
 
 
