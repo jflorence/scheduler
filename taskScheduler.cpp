@@ -1,6 +1,7 @@
 #include "taskScheduler.h"
 #include "fcfsDiscipline.h"
 #include "roundRobinDiscipline.h"
+#include "simpleTemperatureModel.h"
 #include "eventList.h"
 #include "queue.h"
 #include "process.h"
@@ -19,6 +20,7 @@ TaskScheduler *TaskScheduler::getInstance()
 		scheduler = new TaskScheduler();
 		//scheduler->setDiscipline(new FcfsDiscipline);
 		scheduler->setDiscipline(new RoundRobinDiscipline);
+		scheduler->setTemperatureModel(new SimpleTemperatureModel);
 	}
 	return scheduler;
 }
@@ -41,6 +43,15 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double currentTime)
 		eventList->remove(it);
 		readyQueue->add(runningTask);
 	}
+	
+	double runningInterval = currentTime - previousTime;
+	energy += power*runningInterval;
+	previousTime = currentTime;
+	double powerCoeff = (runningTask==nullptr) ? 1.0: runningTask->powerCoeff;
+	power = freq*freq*freq*capa*powerCoeff + leakage;
+
+	temperatureModel->updateTemperature(runningInterval, power);
+
 	runningTask = discipline->selectNextTask(readyQueue);/*this function should also update the frequency*/
 	readyQueue->remove(runningTask);
 	if (runningTask == nullptr)
@@ -75,7 +86,10 @@ void TaskScheduler::setDiscipline(SchedulingDiscipline *disc)
 	discipline = disc;
 }
 
-
+void TaskScheduler::setTemperatureModel(TemperatureModel *model)
+{
+	temperatureModel = model;
+}
 void TaskScheduler::setBurstEnd(EventList::iterator it)
 {
 	burstEnd = it;

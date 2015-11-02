@@ -27,6 +27,7 @@ public:
 	static Process *createJob(int pid, double aow/*amount of work*/);
 	static Process *createProcess(double cpuLambda, double ioLambda);
 	static int getNewPid();
+	const double powerCoeff{1.0};
 };
 
 
