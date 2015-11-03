@@ -15,9 +15,12 @@ public:
 	std::list<Event *>::iterator insert(Event *e);
 	void remove(std::list<Event *>::iterator p);
 	bool isEmpty();
+	void setEndTime(double time);
+	std::list<Event *>::iterator end();
 private:
 	static EventList *instance;
 	std::list<Event *> list;
+	double endTime;
 };
 
 

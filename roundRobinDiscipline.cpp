@@ -48,6 +48,9 @@ bool RoundRobinDiscipline::preempts(TriggeringEvent trigger)
 	return (trigger == TriggeringEvent::timeout);
 }
 
-
+std::string RoundRobinDiscipline::getName()
+{
+	return "Round Robin";
+}
 
 

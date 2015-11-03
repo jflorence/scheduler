@@ -21,7 +21,12 @@ Event *EventList::pop()
 
 std::list<Event *>::iterator EventList::insert(Event *e)
 {
+	
 	double time = e->getTime();
+	
+	if(time > endTime)
+		return list.end();
+
 	auto p = list.end();
 	while(p != list.begin())
 	{
@@ -50,11 +55,16 @@ bool EventList::isEmpty()
 
 
 
+void EventList::setEndTime(double time)
+{
+	endTime = time;
+}
 
 
-
-
-
+std::list<Event *>::iterator EventList::end()
+{
+	return list.end();
+}
 
 
 

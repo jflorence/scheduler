@@ -23,17 +23,24 @@ int main()
 	std::cout << "Hello!\n";
 	
 	EventList *eventList = EventList::getInstance();;	
-	Event *stopEvent = new StopSimulation(100, NULL, false);
+	Event *stopEvent = new StopSimulation(100, NULL);
 	eventList->insert(stopEvent);
-
+	eventList->setEndTime(100.0);
 	
-	Event *interactive = new NewInteractiveProcess(1, NULL, true);
+	Event *interactive = new NewInteractiveProcess(1, NULL);
 	eventList->insert(interactive);
+	interactive = new NewInteractiveProcess(1, NULL);
+	eventList->insert(interactive);
+
+	Event *timeout = new TimeOut(1, NULL);
+	eventList->insert(timeout);
 	
 	startEventScheduler();
 
 	return 0;
 }
+
+
 
 
 

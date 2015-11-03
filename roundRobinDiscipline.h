@@ -13,6 +13,7 @@ public:
 	RoundRobinDiscipline();
 	Process *selectNextTask(Queue *readyQueue);
 	bool preempts(TriggeringEvent trigger);
+	std::string getName();
 private:
 	Process *currentProcess{nullptr};
 };

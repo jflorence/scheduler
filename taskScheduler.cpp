@@ -26,24 +26,65 @@ TaskScheduler *TaskScheduler::getInstance()
 }
 
 
-void TaskScheduler::scheduleTask(TriggeringEvent trigger, double currentTime)
+void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 {
+	currentTime = time;
 	std::cout << currentTime << ": Task scheduler invoked from "<<trigger<<"\n";
 	if (trigger != wait && trigger != terminate && !discipline->preempts(trigger) && cpuBusy)
 		return;
-	assert((cpuBusy && runningTask != nullptr) || (!cpuBusy && runningTask == nullptr));
+
 	EventList *eventList = EventList::getInstance();
 	Queue *readyQueue = Queue::getReadyQueue();
-	Event *e;
 	if (discipline->preempts(trigger) && cpuBusy)
 	{
 		auto it = getBurstEnd();
-		double newAow = ((*it)->getTime() - currentTime)*freq;
-		runningTask->updateCurrentAow(newAow);
-		eventList->remove(it);
+		if (it != eventList->end())
+		{
+			double newAow = ((*it)->getTime() - currentTime)*freq;
+			runningTask->updateCurrentAow(newAow);
+			eventList->remove(it);
+		}
 		readyQueue->add(runningTask);
 	}
 	
+	updateTemperature();	
+	selectTaskAndFreq(readyQueue);
+	
+
+	readyQueue->remove(runningTask);
+	if (runningTask == nullptr)
+	{
+		cpuBusy = false;
+		std::cout << "Processor sleeping\n";
+		return;
+	}
+	std::cout << "Currently running "<<runningTask->getPid()<<"\n";
+	cpuBusy = true;
+	double newTime = runningTask->getCurrentCpuAow()/freq;
+	newTime += currentTime;
+	bool wait = true;
+	wait = runningTask->advanceBurst();
+	Event *e;
+	if (wait)
+	{
+		e = new Waiting(newTime, runningTask);
+	}
+	else
+	{
+		e = new Terminates(newTime, runningTask);
+	}
+	auto it = eventList->insert(e);
+	setBurstEnd(it);
+	return;
+}
+
+void TaskScheduler::selectTaskAndFreq(Queue *readyQueue)
+{
+	runningTask = discipline->selectNextTask(readyQueue);
+}
+
+void TaskScheduler::updateTemperature()
+{
 	double runningInterval = currentTime - previousTime;
 	energy += power*runningInterval;
 	previousTime = currentTime;
@@ -51,32 +92,7 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double currentTime)
 	power = freq*freq*freq*capa*powerCoeff + leakage;
 
 	temperatureModel->updateTemperature(runningInterval, power);
-
-	runningTask = discipline->selectNextTask(readyQueue);/*this function should also update the frequency*/
-	readyQueue->remove(runningTask);
-	if (runningTask == nullptr)
-	{
-		cpuBusy = false;
-		return;
-	}
-	cpuBusy = true;
-	double time = runningTask->getCurrentCpuAow()/freq;
-	time += currentTime;
-	bool wait = true;
-	wait = runningTask->advanceBurst();
-	if (wait)
-	{
-		e = new Waiting(time, runningTask);
-	}
-	else
-	{
-		e = new Terminates(time, runningTask);
-	}
-	auto it = eventList->insert(e);
-	setBurstEnd(it);
-	return;
 }
-
 
 
 
@@ -84,6 +100,7 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double currentTime)
 void TaskScheduler::setDiscipline(SchedulingDiscipline *disc)
 {
 	discipline = disc;
+	std::cout << "Using scheduling discipline "<<disc->getName()<<"\n";
 }
 
 void TaskScheduler::setTemperatureModel(TemperatureModel *model)
