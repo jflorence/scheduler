@@ -33,6 +33,20 @@ void StopSimulation::process()
 	return;
 }
 
+void StopSimulation::print()
+{
+	std::cout << getTime() <<": StopSimulation\n";
+}
+
+NewProcess::~NewProcess()
+{
+}
+
+void NewProcess::queueProcess(Process *task)
+{
+	Queue::getReadyQueue()->add(task);
+}
+
 void NewInteractiveProcess::process()
 {
 	task = createTask();
@@ -50,10 +64,6 @@ Process *NewInteractiveProcess::createTask()
 	return Process::createProcess(cpuLambda, ioLambda);
 }
 
-void NewInteractiveProcess::queueProcess(Process *p)
-{
-	Queue::getReadyQueue()->add(p);
-}
 
 void NewInteractiveProcess::scheduleNextEvent()
 {
@@ -69,14 +79,44 @@ void NewInteractiveProcess::scheduleNextEvent()
 		RandomGenerator *gen = RandomGenerator::getRandomGenerator();
 		interval = gen->drawExp(lambda);
 	} while(interval == std::numeric_limits<double>::infinity());
-	Event *e = new NewInteractiveProcess(time+interval, NULL, false);
+	Event *e = new NewInteractiveProcess(time+interval, nullptr, false);
 	EventList::getInstance()->insert(e);
+}
+
+void NewInteractiveProcess::print()
+{
+	std::cout << getTime() << ": New interactive process\n";
 }
 
 void NewJob::process()
 {
-/*TODO*/
+	/*TODO: refactor private functions to the parent class*/
+	if (task == nullptr)
+		task = createTask();
+	queueProcess(task);
+	scheduleNextEvent();
+	LOG("job "<<task->getPid()<< "created");
 	return;
+}
+
+Process *NewJob::createTask()
+{
+	Process *p = Process::createRealTimeTask(10, 35, 30, ((pid != -1) ? pid:Process::getNewPid()));
+
+	return p;
+}
+
+void NewJob::scheduleNextEvent()
+{
+	if(!renew)
+		return;
+	Event *e = new NewJob(time + task->getPeriod(), new Process(*task), false);
+	EventList::getInstance()->insert(e);
+}
+
+void NewJob::print()
+{
+	std::cout << getTime() << ": New job with pid "<<task->getPid()<<"\n";
 }
 
 void TimeOut::process()
@@ -98,6 +138,11 @@ void TimeOut::setInterval(double inter)
 	interval = inter;
 }
 
+void TimeOut::print()
+{
+	std::cout << getTime() << ": TimeOut\n";
+}
+
 void Ready::process()
 {
 	assert(task != nullptr);
@@ -106,6 +151,11 @@ void Ready::process()
 	LOG("task "<<task->getPid()<<" becomes ready");
 	TaskScheduler::getInstance()->scheduleTask(TriggeringEvent::ready, time);
 	return;
+}
+
+void Ready::print()
+{
+	std::cout << getTime() << ": process "<<task->getPid()<<" Ready\n";
 }
 
 void Waiting::process()
@@ -119,16 +169,24 @@ void Waiting::process()
 	return;
 }
 
+void Waiting::print()
+{
+	std::cout << getTime() << ": process "<<task->getPid()<<" is waiting\n";
+}
+
 void Terminates::process()
 {
 	assert(task != nullptr);
 	LOG("task "<<task->getPid()<<" terminates");
 	TaskScheduler::getInstance()->scheduleTask(TriggeringEvent::terminate, time);
-	//delete task;
+	delete task;
 	return;
 }
 
-
+void Terminates::print()
+{
+	std::cout << getTime() << ": prcess "<<task->getPid()<<" terminates\n";
+}
 
 
 

@@ -9,6 +9,11 @@ Queue *Queue::waitQueue = nullptr;
 
 void Queue::add(Process *p)
 {
+	for (auto it = queue.begin(); it != queue.end(); it++)
+	{
+		//assert(p != (*it));
+	}
+
 	queue.push_back(p);
 	assert(p != nullptr);
 }
@@ -66,6 +71,29 @@ bool Queue::isEmpty()
 {
 	return (size() == 0);
 }
+
+
+void Queue::print()
+{
+	std::cout << "The queue contains:\n";
+	for (auto it = queue.begin(); it != queue.end(); it++)
+	{
+		std::cout << "    pid "<<(*it)->getPid()<<"\n";
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

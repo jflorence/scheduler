@@ -1,5 +1,6 @@
 #include "eventList.h"
-
+#include <cassert>
+#include <iostream>
 EventList *EventList::instance = nullptr;
 
 EventList *EventList::getInstance()
@@ -19,14 +20,17 @@ Event *EventList::pop()
 }
 
 
-std::list<Event *>::iterator EventList::insert(Event *e)
+Event * EventList::insert(Event *e)
 {
-	
+	if (e == nullptr)
+		return nullptr;
 	double time = e->getTime();
 	
 	if(time > endTime)
-		return list.end();
-
+	{
+		delete e;
+		return nullptr;
+	}
 	auto p = list.end();
 	while(p != list.begin())
 	{
@@ -36,15 +40,29 @@ std::list<Event *>::iterator EventList::insert(Event *e)
 			break;
 		}
 	}
-	auto i = list.insert(p, e);
-	return i;
+	auto it = list.insert(p, e);
+	assert(e == (*it));
+	return e;
 }
 
 
 
-void EventList::remove(std::list<Event *>::iterator p)
+void EventList::remove(Event *e)
 {
-	list.erase(p);
+	std::cout << "removing event: \n";
+	e->print();
+	print();
+	for (auto it = list.begin(); it != list.end(); it++)
+	{
+		(*it)->print();
+		if (e == (*it))
+		if (e == (*it))
+		{
+			assert(e != nullptr);
+			list.erase(it);
+			return;
+		}
+	}
 }
 
 
@@ -61,10 +79,45 @@ void EventList::setEndTime(double time)
 }
 
 
-std::list<Event *>::iterator EventList::end()
+void EventList::print()
 {
-	return list.end();
+	std::cout << "Printing the event list:\n";
+	for (auto it = list.begin(); it != list.end(); it++)
+	{
+		assert((*it) != nullptr);
+		std::cout << "    ";
+		(*it)->print();
+	}
 }
+
+
+Event *EventList::getHead()
+{
+	return (*list.begin());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

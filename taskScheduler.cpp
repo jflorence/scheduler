@@ -25,28 +25,37 @@ TaskScheduler *TaskScheduler::getInstance()
 	return scheduler;
 }
 
+void TaskScheduler::printStatus()
+{
+	EventList::getInstance()->print();
+	Queue::getReadyQueue()->print();
+	Queue::getWaitQueue()->print();
+}
 
 void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 {
 	currentTime = time;
-	std::cout << currentTime << ": Task scheduler invoked from "<<trigger<<"\n";
-	if (trigger != wait && trigger != terminate && !discipline->preempts(trigger) && cpuBusy)
-		return;
-
-	EventList *eventList = EventList::getInstance();
+	std::cout << currentTime << ": Task scheduler invoked\n";
 	Queue *readyQueue = Queue::getReadyQueue();
+	EventList *eventList = EventList::getInstance();
+	if (trigger != wait && trigger != terminate && !discipline->preempts(trigger) && cpuBusy)
+	{
+		std::cout << "Currently running "<<runningTask->getPid()<<"\n";
+		return;
+	}
 	if (discipline->preempts(trigger) && cpuBusy)
 	{
-		auto it = getBurstEnd();
-		if (it != eventList->end())
+		Event *ev = getBurstEnd();
+		if (ev != nullptr)
 		{
-			double newAow = ((*it)->getTime() - currentTime)*freq;
+			double newAow = (ev->getTime() - currentTime)*freq;
 			runningTask->updateCurrentAow(newAow);
-			eventList->remove(it);
+			eventList->remove(ev);
+			readyQueue->add(runningTask);
+			delete ev;
 		}
-		readyQueue->add(runningTask);
 	}
-	
+
 	updateTemperature();	
 	selectTaskAndFreq(readyQueue);
 	
@@ -73,8 +82,8 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 	{
 		e = new Terminates(newTime, runningTask);
 	}
-	auto it = eventList->insert(e);
-	setBurstEnd(it);
+	
+	setBurstEnd(eventList->insert(e));
 	return;
 }
 
@@ -107,12 +116,12 @@ void TaskScheduler::setTemperatureModel(TemperatureModel *model)
 {
 	temperatureModel = model;
 }
-void TaskScheduler::setBurstEnd(EventList::iterator it)
+void TaskScheduler::setBurstEnd(Event *e)
 {
-	burstEnd = it;
+	burstEnd = e;
 }
 
-EventList::iterator TaskScheduler::getBurstEnd()
+Event *TaskScheduler::getBurstEnd()
 {
 	return burstEnd;
 }

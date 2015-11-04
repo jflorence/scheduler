@@ -18,6 +18,7 @@ public:
 	iterator end();
 	size_t size();
 	bool isEmpty();
+	void print();
 private:
 	std::list<Process *> queue;
 	static Queue *readyQueue;

@@ -7,6 +7,7 @@ class Process;
 class SchedulingDiscipline;
 class TemperatureModel;
 class Queue;
+class Event;
 class TaskScheduler
 {
 public:
@@ -20,9 +21,9 @@ private:
 	double freq{1};
 	SchedulingDiscipline *discipline{nullptr};
 	bool cpuBusy{false};
-	EventList::iterator burstEnd;
-	void setBurstEnd(EventList::iterator it);
-	EventList::iterator getBurstEnd();
+	Event *burstEnd;
+	void setBurstEnd(Event *e);
+	Event *getBurstEnd();
 	double previousTime{0.0};
 	double currentTime{0.0};
 	double energy{0.0};
@@ -32,6 +33,7 @@ private:
 	TemperatureModel *temperatureModel{nullptr};
 	void updateTemperature();
 	void selectTaskAndFreq(Queue *readyQueue);
+	void printStatus();
 };
 
 #endif

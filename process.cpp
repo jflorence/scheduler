@@ -1,6 +1,7 @@
 #include "process.h"
 #include "randomGenerator.h"
 #include <iostream>
+#include <cassert>
 
 Process::Process(int p, int nb, double *cpu, double *io, int pri)
 {
@@ -12,12 +13,36 @@ Process::Process(int p, int nb, double *cpu, double *io, int pri)
 	priority = pri;
 }
 
+Process::Process(const Process& task)
+{
+	currentBurst = 0;
+	pid = task.pid;
+	nbBursts = task.nbBursts;
+	cpuBurst = new double[nbBursts];
+	ioBurst = new double[nbBursts];
+	for (int i = 0; i < nbBursts; i++)
+	{
+		cpuBurst[i] = task.cpuBurst[i];
+		ioBurst[i] = task.ioBurst[i];
+	}
+	priority = task.priority;
+	RT = task.RT;
+	deadline = task.deadline;
+	period = task.period;
+}
+
 Process::~Process()
 {
 	if (cpuBurst != nullptr)
-		delete cpuBurst;
+	{
+		delete[] cpuBurst;
+		cpuBurst = nullptr;
+	}
 	if (ioBurst != nullptr)
-		delete ioBurst;
+	{
+		delete[] ioBurst;
+		ioBurst = nullptr;
+	}
 }
 
 int Process::getPid()
@@ -39,6 +64,7 @@ void Process::decrementBurst()
 
 double Process::getCurrentCpuAow()
 {
+	assert(cpuBurst != nullptr);
 	return cpuBurst[currentBurst];
 }
 
@@ -77,8 +103,29 @@ Process *Process::createProcess(double cpuLambda, double ioLambda)
 	return p;
 }
 
+Process *Process::createRealTimeTask(double aow, double T, double dl, int pid)
+{
+	int nbBursts = 1;
+	double *cpuBurst = new double[nbBursts];
+	double *ioBurst = new double[nbBursts];
+	cpuBurst[0] = aow;
+	ioBurst[0] = 0;
+	Process *p = new Process(pid, nbBursts, cpuBurst, ioBurst);
+	p->setRtParams(dl, T);
+	return p;
+}
 
+void Process::setRtParams(double dl, double T)
+{
+	deadline = dl;
+	period = T;
+	RT = true;
+}
 
+bool Process::isRealTime()
+{
+	return RT;
+}
 
 int Process::getNewPid()
 {
@@ -90,11 +137,14 @@ int Process::getNewPid()
 
 void Process::updateCurrentAow(double aow)
 {
-	cpuBurst[currentBurst] = aow;
+	assert(cpuBurst != nullptr);
+	cpuBurst[--currentBurst] = aow;
 }
 
-
-
+double Process::getPeriod()
+{
+	return period;
+}
 
 
 
