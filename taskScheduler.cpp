@@ -1,6 +1,7 @@
 #include "taskScheduler.h"
 #include "fcfsDiscipline.h"
 #include "roundRobinDiscipline.h"
+#include "freqGovernor.h"
 #include "simpleTemperatureModel.h"
 #include "eventList.h"
 #include "queue.h"
@@ -21,6 +22,7 @@ TaskScheduler *TaskScheduler::getInstance()
 		//scheduler->setDiscipline(new FcfsDiscipline);
 		scheduler->setDiscipline(new RoundRobinDiscipline);
 		scheduler->setTemperatureModel(new SimpleTemperatureModel);
+		scheduler->setFreqGovernor(nullptr);
 	}
 	return scheduler;
 }
@@ -56,9 +58,12 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 		}
 	}
 
-	updateTemperature();	
-	selectTaskAndFreq(readyQueue);
-	
+	updateTemperature();
+
+	runningTask = discipline->selectNextTask(readyQueue);
+
+	if (freqGovernor != nullptr && freqGovernor->freqChangeEvent(trigger))
+		freq = freqGovernor->selectFreq(readyQueue);
 
 	readyQueue->remove(runningTask);
 	if (runningTask == nullptr)
@@ -89,7 +94,7 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 
 void TaskScheduler::selectTaskAndFreq(Queue *readyQueue)
 {
-	runningTask = discipline->selectNextTask(readyQueue);
+	/*not used finally TODO: remove*/
 }
 
 void TaskScheduler::updateTemperature()
@@ -125,5 +130,27 @@ Event *TaskScheduler::getBurstEnd()
 {
 	return burstEnd;
 }
+
+void TaskScheduler::setFreqGovernor(FreqGovernor *gov)
+{
+	freqGovernor = gov;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

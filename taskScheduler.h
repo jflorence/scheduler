@@ -8,6 +8,7 @@ class SchedulingDiscipline;
 class TemperatureModel;
 class Queue;
 class Event;
+class FreqGovernor;
 class TaskScheduler
 {
 public:
@@ -15,6 +16,7 @@ public:
 	void scheduleTask(TriggeringEvent trigger, double currentTime);
 	void setDiscipline(SchedulingDiscipline *discipline);
 	void setTemperatureModel(TemperatureModel *model);
+	void setFreqGovernor(FreqGovernor *gov);
 private:
 	static TaskScheduler *scheduler;
 	Process *runningTask{nullptr};
@@ -34,6 +36,7 @@ private:
 	void updateTemperature();
 	void selectTaskAndFreq(Queue *readyQueue);
 	void printStatus();
+	FreqGovernor *freqGovernor{nullptr};
 };
 
 #endif

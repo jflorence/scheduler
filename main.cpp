@@ -5,6 +5,8 @@
 #include <tuple>
 #include "eventList.h"
 #include <ctime>
+#include "randomGenerator.h"
+
 
 void startEventScheduler()
 {
@@ -32,7 +34,7 @@ void createRealTimeTask(double startTime, double period, double deadline, double
 int main()
 {
 	std::cout << "Hello!\n";
-	RandomGenerator::getInstance()->seed(time());
+	RandomGenerator::getRandomGenerator()->seed(time(NULL));
 	
 	EventList *eventList = EventList::getInstance();;	
 	Event *stopEvent = new StopSimulation(100, nullptr);
