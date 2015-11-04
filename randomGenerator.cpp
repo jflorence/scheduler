@@ -35,8 +35,10 @@ double RandomGenerator::drawExp(double lambda)
 }
 
 
-
-
+void RandomGenerator::seed(time_t seed)
+{
+	gen.seed(seed);
+}
 
 
 

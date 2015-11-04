@@ -9,6 +9,7 @@ public:
 	static RandomGenerator *getRandomGenerator();
 	double drawExp(double lambda);
 	double drawUniform(double min, double max);
+	void seed(time_t seed);
 private:
 	static RandomGenerator *instance;
 	std::default_random_engine gen;
