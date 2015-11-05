@@ -9,8 +9,9 @@ public:
 	MaxGovernor();
 	double selectFreq(Queue *readyQueue);
 	bool freqChangeEvent(TriggeringEvent trigger);
+	std::string getName();
 private:
-	double maxFreq{2.0}; /*TODO make this a const and solve the resulting initialization problem*/
+	const double maxFreq{2.0}; /*TODO make this a const and solve the resulting initialization problem*/
 };
 
 #endif

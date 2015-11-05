@@ -1,9 +1,8 @@
 #include "minGovernor.h"
 #include "queue.h"
 
-MinGovernor::MinGovernor()
+MinGovernor::MinGovernor() : minFreq(Processor::getInstance()->getMinFreq())
 {
-	minFreq = Processor::getInstance()->getMinFreq();
 }
 
 double MinGovernor::selectFreq(Queue * /*readyQueue*/)
@@ -15,3 +14,11 @@ bool MinGovernor::freqChangeEvent(TriggeringEvent /*trigger*/)
 {
 	return true;
 }
+
+std::string MinGovernor::getName()
+{
+	return "MinGovernor";
+}
+
+
+

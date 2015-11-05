@@ -138,6 +138,7 @@ Event *TaskScheduler::getBurstEnd()
 void TaskScheduler::setFreqGovernor(FreqGovernor *gov)
 {
 	freqGovernor = gov;
+	std::cout << "Using frequency governor "<<gov->getName()<<"\n";
 }
 
 

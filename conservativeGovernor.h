@@ -11,9 +11,10 @@ public:
 	ConservativeGovernor();
 	double selectFreq(Queue *readyQueue);
 	bool freqChangeEvent(TriggeringEvent trigger);
+	std::string getName();
 private:
-	double minFreq;
-	double maxFreq;
+	const double maxFreq;
+	const double minFreq;
 	double currentFreq;
 
 	const double samplingRate{10}; /*FIXME This is pretty much useless here for the moment*/

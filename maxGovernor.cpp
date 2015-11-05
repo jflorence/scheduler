@@ -2,9 +2,8 @@
 #include "queue.h"
 #include "processor.h"
 
-MaxGovernor::MaxGovernor()
+MaxGovernor::MaxGovernor() : maxFreq(Processor::getInstance()->getMaxFreq())
 {
-	maxFreq = Processor::getInstance()->getMaxFreq();
 }
 
 double MaxGovernor::selectFreq(Queue * /*readyQueue*/)
@@ -17,4 +16,7 @@ bool MaxGovernor::freqChangeEvent(TriggeringEvent /*trigger*/)
 	return true;
 }
 
-
+std::string MaxGovernor::getName()
+{
+	return "MaxGovernor";
+}
