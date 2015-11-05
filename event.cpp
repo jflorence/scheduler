@@ -1,14 +1,19 @@
 #include "event.h"
-#include <iostream>
+
 #include <cassert>
-#include "process.h"
-#include "log.h"
-#include "queue.h"
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+
 #include "eventList.h"
+#include "eventType.h"
+#include "log.h"
+#include "process.h"
+#include "processor.h"
+#include "queue.h"
 #include "randomGenerator.h"
 #include "taskScheduler.h"
-#include "eventType.h"
-#include "processor.h"
+
 
 Event::Event(double t, Process *p, bool r)
 {
@@ -26,16 +31,29 @@ double Event::getTime()
 	return time;
 }
 
+void Event::print()
+{
+	std::cout << std::fixed << std::setfill(' ') << std::setw(7) << std::setprecision(3)<< getTime() <<": ";
+	if (task != nullptr)
+	{
+		std::cout << " Task"<<std::setfill(' ') << std::setw(3) << task->getPid()<< ": ";
+	}
+	
+	std::cout << getName()<<"\n";
+}
+
 
 void StopSimulation::process()
 {
-	LOG("Simulation stopped");
+	TaskScheduler::getInstance()->printReports();
+	EventList::getInstance()->empty();
+	print();
 	return;
 }
 
-void StopSimulation::print()
+std::string StopSimulation::getName()
 {
-	std::cout << getTime() <<": StopSimulation\n";
+	return "Simulation stopped";
 }
 
 NewProcess::~NewProcess()
@@ -50,11 +68,20 @@ void NewProcess::queueProcess(Process *task)
 void NewInteractiveProcess::process()
 {
 	task = createTask();
+	std::ofstream file;
+	file.open("processes.txt", std::ios_base::app);
+	task->print(file);
+	file.close();
 	queueProcess(task);	
 	scheduleNextEvent();
-	LOG("task "<<task->getPid()<<" created");
+	print();
 	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 	return;
+}
+
+std::string NewInteractiveProcess::getName()
+{
+	return "New interactive process";
 }
 
 Process *NewInteractiveProcess::createTask()
@@ -83,10 +110,6 @@ void NewInteractiveProcess::scheduleNextEvent()
 	EventList::getInstance()->insert(e);
 }
 
-void NewInteractiveProcess::print()
-{
-	std::cout << getTime() << ": New interactive process\n";
-}
 
 void NewJob::process()
 {
@@ -95,9 +118,14 @@ void NewJob::process()
 		task = createTask();
 	queueProcess(task);
 	scheduleNextEvent();
-	LOG("job "<<task->getPid()<< "created");
+	print();
 	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 	return;
+}
+
+std::string NewJob::getName()
+{
+	return "New job";
 }
 
 Process *NewJob::createTask()
@@ -115,19 +143,20 @@ void NewJob::scheduleNextEvent()
 	EventList::getInstance()->insert(e);
 }
 
-void NewJob::print()
-{
-	std::cout << getTime() << ": New job with pid "<<task->getPid()<<"\n";
-}
 
 void TimeOut::process()
 {
 	TimeOut *e = new TimeOut(time+interval, task);
 	e->setInterval(interval);
 	EventList::getInstance()->insert(e);
-	LOG("Time out");
+	print();
 	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 	return;
+}
+
+std::string TimeOut::getName()
+{
+	return "Timeout";
 }
 
 void TimeOut::setType(TriggeringEvent trigger)
@@ -145,78 +174,68 @@ void TimeOut::setInterval(double inter)
 	interval = inter;
 }
 
-void TimeOut::print()
-{
-	std::cout << getTime() << ": TimeOut";
-	if (eventType == freqUpdate)
-	{
-		std::cout << " for frequency update";	
-	}
-	std::cout << "\n";
-}
-
 void UsageUpdate::process()
 {
 	UsageUpdate *e = new UsageUpdate(time+interval, nullptr);
 	e->setInterval(interval);
 	EventList::getInstance()->insert(e);
-	LOG("Usage update");
-	/*This event should be independent of the task scheduler?*/
+	print();
 	Processor::getInstance()->updateUsage(TaskScheduler::getInstance()->isBusy());
 	return;
 }
 
-void UsageUpdate::print()
+std::string UsageUpdate::getName()
 {
-	std::cout << getTime() << ": updating CPU usage\n";
+	return "Usage update";
 }
+
 
 void Ready::process()
 {
 	assert(task != nullptr);
 	Queue::getReadyQueue()->add(task);
 	Queue::getWaitQueue()->remove(task);
-	LOG("task "<<task->getPid()<<" becomes ready");
+	print();
 	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 	return;
 }
 
-void Ready::print()
+std::string Ready::getName()
 {
-	std::cout << getTime() << ": process "<<task->getPid()<<" Ready\n";
+	return "Process ready";
 }
+
 
 void Waiting::process()
 {
 	assert(task != nullptr);
 	Queue::getWaitQueue()->add(task);
-	LOG("task "<<task->getPid()<<" is blocked");
+	print();
 	Event *e = new Ready(time + task->getCurrentIoTime(), task);
 	EventList::getInstance()->insert(e);
 	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 	return;
 }
 
-void Waiting::print()
+std::string Waiting::getName()
 {
-	std::cout << getTime() << ": process "<<task->getPid()<<" is waiting\n";
+	return "Process waiting";
 }
+
 
 void Terminates::process()
 {
 	assert(task != nullptr);
-	LOG("task "<<task->getPid()<<" terminates");
+	print();
 	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 	delete task;
 	return;
 }
 
-void Terminates::print()
+std::string Terminates::getName()
 {
-	std::cout << getTime() << ": process "<<task->getPid()<<" terminates\n";
+	return "Process terminates";
 }
-
-
 
 
 

@@ -2,6 +2,7 @@
 #define EVENT_H
 
 #include "eventType.h"
+#include <string>
 
 class Process;
 class EventList;
@@ -14,11 +15,12 @@ public:
 	double getTime();
 	virtual void process()=0;
 	virtual ~Event();
-	virtual void print()=0;
+	void print();
+	virtual std::string getName()=0;
 protected:
 	double time;
 	bool renew;
-	Process *task;
+	Process *task{nullptr};
 	TriggeringEvent eventType;
 };
 
@@ -30,7 +32,7 @@ public:
 	NewProcess(double time, Process *task, bool renew=true) : Event(time, task, renew){eventType=newprocess;};
 	virtual ~NewProcess();
 	virtual void process()=0;
-	virtual void print()=0;
+	virtual std::string getName()=0;
 protected:
 	void queueProcess(Process *p);
 	virtual void scheduleNextEvent()=0;
@@ -42,7 +44,7 @@ class NewInteractiveProcess : public NewProcess
 public:
 	NewInteractiveProcess(double time, Process *task, bool renew=true) : NewProcess(time, task, renew){};
 	void process() override;
-	void print() override;
+	std::string getName() override;
 private:
 	double lambda;
 	Process *createTask() override;
@@ -54,7 +56,7 @@ class NewJob : public NewProcess
 public:
 	NewJob(double time, Process *task, bool renew=true) : NewProcess(time, task, renew){};
 	void process() override;
-	void print() override;
+	std::string getName() override;
 private:
 	Process *createTask() override;
 	void scheduleNextEvent() override;
@@ -68,8 +70,8 @@ public:
 	virtual void process() override;
 	double getInterval();
 	void setInterval(double inter);
-	virtual void print() override;
 	void setType(TriggeringEvent trigger);
+	std::string getName() override;
 protected:
 	double interval{2};
 };
@@ -79,7 +81,7 @@ class UsageUpdate : public TimeOut
 public:
 	UsageUpdate(double time, Process *task, bool renew=true) : TimeOut(time, task, renew){eventType=usageUpdate;};
 	void process() override;
-	void print() override;
+	std::string getName() override;
 };
 
 class Ready : public Event
@@ -87,7 +89,7 @@ class Ready : public Event
 public:
 	Ready(double time, Process *task, bool renew=false) : Event(time, task, renew){eventType=ready;};
 	void process() override;
-	void print() override;
+	std::string getName() override;
 };
 
 class Waiting : public Event
@@ -95,7 +97,7 @@ class Waiting : public Event
 public:
 	Waiting(double time, Process *task, bool renew=false) : Event(time, task, renew){eventType=wait;};
 	void process() override;
-	void print() override;
+	std::string getName() override;
 };
 
 class Terminates : public Event
@@ -103,7 +105,7 @@ class Terminates : public Event
 public:
 	Terminates(double time, Process *task, bool renew=false) : Event(time, task, renew){eventType=terminate;};
 	void process() override;
-	void print() override;
+	std::string getName() override;
 };
 
 class StopSimulation : public Event
@@ -111,7 +113,7 @@ class StopSimulation : public Event
 public:
 	StopSimulation(double time, Process *task, bool renew=false) : Event(time, task, renew){eventType=stop;};
 	void process() override;
-	void print() override;
+	std::string getName() override;
 };
 
 

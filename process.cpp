@@ -1,6 +1,5 @@
 #include "process.h"
 #include "randomGenerator.h"
-#include <iostream>
 #include <cassert>
 
 Process::Process(int p, int nb, double *cpu, double *io, int pri)
@@ -96,8 +95,6 @@ Process *Process::createProcess(double cpuLambda, double ioLambda)
 	{
 		cpuBurst[i] = gen->drawExp(cpuLambda);
 		ioBurst[i] = gen->drawExp(ioLambda);
-		std::cout << "cpuBurst["<<i<<"]: "<<cpuBurst[i]<<"\n";
-		std::cout << "ioBurst["<<i<<"]: "<<ioBurst[i]<<"\n";
 	}
 	Process *p = new Process(Process::getNewPid(), nbBursts, cpuBurst, ioBurst);
 	return p;
@@ -145,6 +142,43 @@ double Process::getPeriod()
 {
 	return period;
 }
+
+
+
+void Process::print(std::ostream& stream)
+{
+	stream << "Processs "<<pid<<":\n";
+	stream << "    priority: "<<priority<<"\n";
+	stream << "    Bursts:\n";
+	for (int i = 0; i < nbBursts; i++)
+	{
+		stream << "      "<<i<<". CPU: "<<cpuBurst[i]<<"\n";
+		stream << "                        IO: " <<ioBurst[i]<<"\n";
+	}
+	if (RT)
+	{
+		stream << "    This proces IS real-time\n";
+		stream << "    Deadline: "<<deadline<<"\n";
+		stream << "    Period: "<<period<<"\n";
+	}
+	else
+	{
+		stream << "    This process IS NOT real-time\n";
+	}
+	stream << "\n";
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

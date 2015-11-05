@@ -14,16 +14,25 @@ class TaskScheduler
 {
 public:
 	static TaskScheduler *getInstance();
+private:	
+	static TaskScheduler *scheduler;
+public:
 	void scheduleTask(TriggeringEvent trigger, double currentTime);
 	void setDiscipline(SchedulingDiscipline *discipline);
 	void setTemperatureModel(TemperatureModel *model);
 	void setFreqGovernor(FreqGovernor *gov);
 	bool isBusy();
+	void printReports();
 private:
-	static TaskScheduler *scheduler;
+	
+	void updateTemperature();
+	void printStatus();
+	
+	SchedulingDiscipline *discipline{nullptr};
+	TemperatureModel *temperatureModel{nullptr};
+	FreqGovernor *freqGovernor{nullptr};
 	Process *runningTask{nullptr};
 	double freq{1};
-	SchedulingDiscipline *discipline{nullptr};
 	bool cpuBusy{false};
 	Event *burstEnd;
 	void setBurstEnd(Event *e);
@@ -34,10 +43,6 @@ private:
 	double power{0.0};
 	double capa{1.0};
 	double leakage{1.0};
-	TemperatureModel *temperatureModel{nullptr};
-	void updateTemperature();
-	void printStatus();
-	FreqGovernor *freqGovernor{nullptr};
 };
 
 #endif

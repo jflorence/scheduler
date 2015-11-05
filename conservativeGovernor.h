@@ -5,7 +5,7 @@
 #include "queue.h"
 
 
-class ConservativeGovernor
+class ConservativeGovernor : public FreqGovernor
 {
 public:
 	ConservativeGovernor();

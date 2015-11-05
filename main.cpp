@@ -34,30 +34,32 @@ void createRealTimeTask(double startTime, double period, double deadline, double
 int main()
 {
 	std::cout << "Hello!\n";
+	
 	RandomGenerator::getRandomGenerator()->seed(time(NULL));
 	
 	EventList *eventList = EventList::getInstance();;	
 	Event *stopEvent = new StopSimulation(100, nullptr);
 	eventList->insert(stopEvent);
-	eventList->setEndTime(100.0);
 	
-	Event *interactive = new NewInteractiveProcess(1, nullptr);
+	Event *interactive = new NewInteractiveProcess(0.0, nullptr);
 	eventList->insert(interactive);
-	interactive = new NewInteractiveProcess(1, nullptr);
+	interactive = new NewInteractiveProcess(0.0, nullptr);
 	eventList->insert(interactive);
 
-	createRealTimeTask(2, 35, 30, 10);
+	//createRealTimeTask(2.0, 35.0, 30.0, 10.0);
 
-	Event *timeout = new TimeOut(1, nullptr);
+	Event *timeout = new TimeOut(1.0, nullptr);
 	eventList->insert(timeout);
 
-	TimeOut *freqTO = new TimeOut(0, nullptr);
+	TimeOut *freqTO = new TimeOut(1.0, nullptr);
 	freqTO->setType(TriggeringEvent::freqUpdate);
+	freqTO->setInterval(10.0);
 	eventList->insert(freqTO);
-/*
-	Event *cpuUsageUpdate = new UsageUpdate(1, nullptr);
+
+	UsageUpdate *cpuUsageUpdate = new UsageUpdate(1.0, nullptr);
+	cpuUsageUpdate->setInterval(2.0);
 	eventList->insert(cpuUsageUpdate);
-*/
+
 
 	startEventScheduler();
 

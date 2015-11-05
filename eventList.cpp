@@ -26,11 +26,14 @@ Event * EventList::insert(Event *e)
 		return nullptr;
 	double time = e->getTime();
 	
+
 	if(time > endTime)
 	{
 		delete e;
 		return nullptr;
 	}
+
+	
 	auto p = list.end();
 	while(p != list.begin())
 	{
@@ -49,9 +52,6 @@ Event * EventList::insert(Event *e)
 
 void EventList::remove(Event *e)
 {
-	std::cout << "removing event: \n";
-	e->print();
-	print();
 	for (auto it = list.begin(); it != list.end(); it++)
 	{
 		(*it)->print();
@@ -68,14 +68,12 @@ void EventList::remove(Event *e)
 
 bool EventList::isEmpty()
 {
-	return (list.begin() == list.end());
+	return (emptied ? true : (list.begin() == list.end()));
 }
 
-
-
-void EventList::setEndTime(double time)
+void EventList::empty()
 {
-	endTime = time;
+	emptied = true;
 }
 
 

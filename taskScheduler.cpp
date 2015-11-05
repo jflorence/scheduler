@@ -1,18 +1,21 @@
 #include "taskScheduler.h"
-#include "fcfsDiscipline.h"
-#include "roundRobinDiscipline.h"
-#include "minGovernor.h"
-#include "maxGovernor.h"
-//#include "conservativeGovernor.h"
-#include "simpleTemperatureModel.h"
-#include "eventList.h"
-#include "queue.h"
-#include "process.h"
-#include "event.h"
-#include <iostream>
-#include <cassert>
-#include "eventType.h"
 
+#include <cassert>
+#include <fstream>
+#include <iostream>
+#include <utility>
+
+#include "conservativeGovernor.h"
+#include "event.h"
+#include "eventList.h"
+#include "eventType.h"
+#include "fcfsDiscipline.h"
+#include "maxGovernor.h"
+#include "minGovernor.h"
+#include "process.h"
+#include "queue.h"
+#include "roundRobinDiscipline.h"
+#include "simpleTemperatureModel.h"
 
 TaskScheduler *TaskScheduler::scheduler = nullptr;
 
@@ -24,7 +27,8 @@ TaskScheduler *TaskScheduler::getInstance()
 		//scheduler->setDiscipline(new FcfsDiscipline);
 		scheduler->setDiscipline(new RoundRobinDiscipline);
 		scheduler->setTemperatureModel(new SimpleTemperatureModel);
-		scheduler->setFreqGovernor(new MinGovernor);
+		//scheduler->setFreqGovernor(new MinGovernor);
+		scheduler->setFreqGovernor(new ConservativeGovernor);
 	}
 	return scheduler;
 }
@@ -39,12 +43,12 @@ void TaskScheduler::printStatus()
 void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 {
 	currentTime = time;
-	std::cout << currentTime << ": Task scheduler invoked\n";
+	//std::cout << currentTime << ": Task scheduler invoked\n";
 	Queue *readyQueue = Queue::getReadyQueue();
 	EventList *eventList = EventList::getInstance();
 	if (trigger != wait && trigger != terminate && !discipline->preempts(trigger) && cpuBusy)
 	{
-		std::cout << "Currently running "<<runningTask->getPid()<<"\n";
+		std::cout << "    Currently running "<<runningTask->getPid()<<"\n";
 		return;
 	}
 	if (discipline->preempts(trigger) && cpuBusy)
@@ -77,10 +81,10 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 	if (runningTask == nullptr)
 	{
 		cpuBusy = false;
-		std::cout << "Processor sleeping\n";
+		std::cout << "    Processor sleeping\n";
 		return;
 	}
-	std::cout << "Currently running "<<runningTask->getPid()<<"\n";
+	std::cout << "    Currently running process number "<<runningTask->getPid()<<"\n";
 	cpuBusy = true;
 	double newTime = runningTask->getCurrentCpuAow()/freq;
 	newTime += currentTime;
@@ -150,7 +154,19 @@ bool TaskScheduler::isBusy()
 
 
 
-
+void TaskScheduler::printReports()
+{
+	std::ofstream file;
+	file.open("reports.txt", std::ios_base::app);
+	std::vector<std::pair<double, double>> tempHist = temperatureModel->getTemperatureHistory();
+	file << "temperature report:\n";
+	for (unsigned int i = 0; i < tempHist.size(); i++)
+	{
+		file << tempHist[i].first << ": " << tempHist[i].second << "\n";	
+	}
+	file << "\n";
+	file.close();
+}
 
 
 
