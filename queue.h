@@ -1,16 +1,21 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#include <list>
 #include <iterator>
+#include <list>
+#include <string>
+
 class Process;
 
 class Queue
 {
-
 public:
 	static Queue *getReadyQueue();
 	static Queue *getWaitQueue();
+private:
+	static Queue *readyQueue;
+	static Queue *waitQueue;
+public:
 	void add(Process *p);
 	Process *remove(Process *p);
 	typedef std::list<Process *>::iterator iterator;
@@ -19,10 +24,10 @@ public:
 	size_t size();
 	bool isEmpty();
 	void print();
+	std::string getDisplay();
 private:
 	std::list<Process *> queue;
-	static Queue *readyQueue;
-	static Queue *waitQueue;
+	std::string queueDisplay;
 };
 
 

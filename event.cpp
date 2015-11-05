@@ -113,7 +113,6 @@ void NewInteractiveProcess::scheduleNextEvent()
 
 void NewJob::process()
 {
-	/*TODO: refactor private functions to the parent class*/
 	if (task == nullptr)
 		task = createTask();
 	queueProcess(task);
@@ -146,11 +145,12 @@ void NewJob::scheduleNextEvent()
 
 void TimeOut::process()
 {
-	TimeOut *e = new TimeOut(time+interval, task);
+	TimeOut *e = new TimeOut(time+interval, task); /*TODO: check what is this task parameter*/
 	e->setInterval(interval);
 	EventList::getInstance()->insert(e);
 	print();
 	TaskScheduler::getInstance()->scheduleTask(eventType, time);
+	
 	return;
 }
 
@@ -159,10 +159,6 @@ std::string TimeOut::getName()
 	return "Timeout";
 }
 
-void TimeOut::setType(TriggeringEvent trigger)
-{
-	eventType = trigger;
-}
 
 double TimeOut::getInterval()
 {
@@ -176,7 +172,7 @@ void TimeOut::setInterval(double inter)
 
 void UsageUpdate::process()
 {
-	UsageUpdate *e = new UsageUpdate(time+interval, nullptr);
+	UsageUpdate *e = new UsageUpdate(time+interval);
 	e->setInterval(interval);
 	EventList::getInstance()->insert(e);
 	print();
@@ -189,6 +185,19 @@ std::string UsageUpdate::getName()
 	return "Usage update";
 }
 
+void FreqUpdate::process()
+{
+	FreqUpdate *e = new FreqUpdate(time+interval);
+	e->setInterval(interval);
+	EventList::getInstance()->insert(e);
+	print();
+	return;
+}
+
+std::string FreqUpdate::getName()
+{
+	return "Frequency update";
+}
 
 void Ready::process()
 {
@@ -202,7 +211,7 @@ void Ready::process()
 
 std::string Ready::getName()
 {
-	return "Process ready";
+	return "Task ready";
 }
 
 
@@ -219,7 +228,7 @@ void Waiting::process()
 
 std::string Waiting::getName()
 {
-	return "Process waiting";
+	return "Task waiting";
 }
 
 
@@ -234,7 +243,7 @@ void Terminates::process()
 
 std::string Terminates::getName()
 {
-	return "Process terminates";
+	return "Task terminates";
 }
 
 

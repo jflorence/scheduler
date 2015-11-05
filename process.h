@@ -20,6 +20,8 @@ public:
 	~Process();
 	
 	int getPid(void);
+	int getPriority();
+	void setPriority(int pri);
 	void updateCurrentAow(double aow);
 	bool advanceBurst();
 	void decrementBurst();

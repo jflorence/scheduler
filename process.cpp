@@ -49,6 +49,15 @@ int Process::getPid()
 	return pid;
 }
 
+int Process::getPriority()
+{
+	return priority;
+}
+
+void Process::setPriority(int pri)
+{
+	priority = pri;
+}
 
 bool Process::advanceBurst()
 {

@@ -12,7 +12,7 @@ RoundRobinDiscipline::RoundRobinDiscipline()
 {
 }
 
-Process *RoundRobinDiscipline::selectNextTask(Queue *readyQueue)
+Process *RoundRobinDiscipline::selectNextTask(Queue *readyQueue, Process * /*running*/)
 {
 	if (readyQueue->isEmpty())
 	{

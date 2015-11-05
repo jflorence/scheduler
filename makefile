@@ -23,5 +23,7 @@ conservativeGovernor.o: conservativeGovernor.cpp
 processor.o: processor.cpp
 
 clean:
-	rm ./scheduler
-	rm *.o
+	rm -f ./scheduler
+	rm -f *.o
+	rm -f processes.txt
+	rm -f reports.txt

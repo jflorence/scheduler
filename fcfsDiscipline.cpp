@@ -2,7 +2,7 @@
 #include "queue.h"
 #include <iostream>
 
-Process *FcfsDiscipline::selectNextTask(Queue *readyQueue)
+Process *FcfsDiscipline::selectNextTask(Queue *readyQueue, Process * /*running*/)
 {
 	if (readyQueue->begin() == readyQueue->end())
 		std::cout << "fcfs is returning empty\n";

@@ -11,7 +11,7 @@ class RoundRobinDiscipline : public SchedulingDiscipline
 {
 public:
 	RoundRobinDiscipline();
-	Process *selectNextTask(Queue *readyQueue);
+	Process *selectNextTask(Queue *readyQueue, Process *running);
 	bool preempts(TriggeringEvent trigger);
 	std::string getName();
 private:

@@ -31,35 +31,48 @@ void createRealTimeTask(double startTime, double period, double deadline, double
 	EventList::getInstance()->insert(rt);
 }
 
+void endSimulation(double time)
+{
+	EventList *eventList = EventList::getInstance();;	
+	Event *stopEvent = new StopSimulation(time);
+	eventList->insert(stopEvent);
+}
+
+void setUsageCalculationTimeout(double start, double interval)
+{
+	UsageUpdate *cpuUsageUpdate = new UsageUpdate(start);
+	cpuUsageUpdate->setInterval(interval);
+	EventList::getInstance()->insert(cpuUsageUpdate);
+}
+
+void setFreqUpdate(double start, double interval)
+{
+	FreqUpdate *freqTO = new FreqUpdate(start);
+	freqTO->setInterval(interval);
+	EventList::getInstance()->insert(freqTO);
+}
+
+void setSchedulerTimeout(double start, double interval)
+{
+	TimeOut *timeout = new TimeOut(start);
+	timeout->setInterval(interval);
+	EventList::getInstance()->insert(timeout);
+}
+
 int main()
 {
 	std::cout << "Hello!\n";
 	
 	RandomGenerator::getRandomGenerator()->seed(time(NULL));
 	
-	EventList *eventList = EventList::getInstance();;	
-	Event *stopEvent = new StopSimulation(100, nullptr);
-	eventList->insert(stopEvent);
-	
-	Event *interactive = new NewInteractiveProcess(0.0, nullptr);
-	eventList->insert(interactive);
-	interactive = new NewInteractiveProcess(0.0, nullptr);
-	eventList->insert(interactive);
+	EventList::getInstance()->insert(new NewInteractiveProcess(0.0));
+	EventList::getInstance()->insert(new NewInteractiveProcess(0.0));
+	createRealTimeTask(2.0, 35.0, 30.0, 10.0);
 
-	//createRealTimeTask(2.0, 35.0, 30.0, 10.0);
-
-	Event *timeout = new TimeOut(1.0, nullptr);
-	eventList->insert(timeout);
-
-	TimeOut *freqTO = new TimeOut(1.0, nullptr);
-	freqTO->setType(TriggeringEvent::freqUpdate);
-	freqTO->setInterval(10.0);
-	eventList->insert(freqTO);
-
-	UsageUpdate *cpuUsageUpdate = new UsageUpdate(1.0, nullptr);
-	cpuUsageUpdate->setInterval(2.0);
-	eventList->insert(cpuUsageUpdate);
-
+	setUsageCalculationTimeout(1.0, 2.0);
+	setFreqUpdate(1.0, 10.0);
+	setSchedulerTimeout(1.0, 2.0);
+	endSimulation(100.0);	
 
 	startEventScheduler();
 

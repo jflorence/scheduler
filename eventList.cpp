@@ -37,7 +37,7 @@ Event * EventList::insert(Event *e)
 	auto p = list.end();
 	while(p != list.begin())
 	{
-		if ((*--p)->getTime() < time)
+		if ((*--p)->getTime() <= time)
 		{
 			p++;
 			break;
@@ -54,7 +54,6 @@ void EventList::remove(Event *e)
 {
 	for (auto it = list.begin(); it != list.end(); it++)
 	{
-		(*it)->print();
 		if (e == (*it))
 		if (e == (*it))
 		{

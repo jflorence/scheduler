@@ -2,7 +2,7 @@
 #include "process.h"
 #include <cassert>
 #include <iostream>
-
+#include <sstream>
 
 Queue *Queue::readyQueue = nullptr;
 Queue *Queue::waitQueue = nullptr;
@@ -82,7 +82,19 @@ void Queue::print()
 	}
 }
 
-
+std::string Queue::getDisplay()
+{
+	if (queue.empty())
+	{
+		return "nothing";
+	}
+	std::ostringstream stream;
+	for (auto it = queue.begin(); it != queue.end(); it++)
+	{
+		stream << (*it)->getPid() << " ";
+	}
+	return stream.str();
+}
 
 
 

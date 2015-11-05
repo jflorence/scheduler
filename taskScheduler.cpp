@@ -48,9 +48,11 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 	EventList *eventList = EventList::getInstance();
 	if (trigger != wait && trigger != terminate && !discipline->preempts(trigger) && cpuBusy)
 	{
-		std::cout << "    Currently running "<<runningTask->getPid()<<"\n";
 		return;
 	}
+
+	std::cout << "\033[34m"<< "    Scheduler invoked. Ready queue contains " << readyQueue->getDisplay() << "\033[0m" <<"\n";
+
 	if (discipline->preempts(trigger) && cpuBusy)
 	{
 		Event *ev = getBurstEnd();
@@ -64,11 +66,9 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 			delete ev;
 		}
 	}
-
 	updateTemperature();
 	
-	runningTask = discipline->selectNextTask(readyQueue);
-
+	runningTask = discipline->selectNextTask(readyQueue, runningTask);
 	if (freqGovernor != nullptr)
 	{
 		if (freqGovernor->freqChangeEvent(trigger))
@@ -81,10 +81,10 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 	if (runningTask == nullptr)
 	{
 		cpuBusy = false;
-		std::cout << "    Processor sleeping\n";
+		std::cout << "\033[1;34m" << "    Processor sleeping"<<"\033[0m"<<"\n";
 		return;
 	}
-	std::cout << "    Currently running process number "<<runningTask->getPid()<<"\n";
+	std::cout << "\033[1;34m"<<"    Currently running process number "<<runningTask->getPid()<< "\033[0m"<<"\n";
 	cpuBusy = true;
 	double newTime = runningTask->getCurrentCpuAow()/freq;
 	newTime += currentTime;
@@ -122,7 +122,7 @@ void TaskScheduler::updateTemperature()
 void TaskScheduler::setDiscipline(SchedulingDiscipline *disc)
 {
 	discipline = disc;
-	std::cout << "Using scheduling discipline "<<disc->getName()<<"\n";
+	std::cout <<"\033[1;32m"<< "Using scheduling discipline "<<disc->getName()<<"\033[0m"<<"\n";
 }
 
 void TaskScheduler::setTemperatureModel(TemperatureModel *model)
@@ -142,7 +142,7 @@ Event *TaskScheduler::getBurstEnd()
 void TaskScheduler::setFreqGovernor(FreqGovernor *gov)
 {
 	freqGovernor = gov;
-	std::cout << "Using frequency governor "<<gov->getName()<<"\n";
+	std::cout <<"\033[1;32m"<< "Using frequency governor "<<gov->getName()<<"\033[0m"<<"\n";
 }
 
 
