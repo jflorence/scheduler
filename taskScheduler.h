@@ -3,6 +3,7 @@
 
 #include "eventList.h"
 #include "eventType.h"
+
 class Process;
 class SchedulingDiscipline;
 class TemperatureModel;
@@ -17,6 +18,7 @@ public:
 	void setDiscipline(SchedulingDiscipline *discipline);
 	void setTemperatureModel(TemperatureModel *model);
 	void setFreqGovernor(FreqGovernor *gov);
+	bool isBusy();
 private:
 	static TaskScheduler *scheduler;
 	Process *runningTask{nullptr};
@@ -34,7 +36,6 @@ private:
 	double leakage{1.0};
 	TemperatureModel *temperatureModel{nullptr};
 	void updateTemperature();
-	void selectTaskAndFreq(Queue *readyQueue);
 	void printStatus();
 	FreqGovernor *freqGovernor{nullptr};
 };

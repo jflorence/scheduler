@@ -51,6 +51,14 @@ int main()
 	Event *timeout = new TimeOut(1, nullptr);
 	eventList->insert(timeout);
 
+	TimeOut *freqTO = new TimeOut(0, nullptr);
+	freqTO->setType(TriggeringEvent::freqUpdate);
+	eventList->insert(freqTO);
+/*
+	Event *cpuUsageUpdate = new UsageUpdate(1, nullptr);
+	eventList->insert(cpuUsageUpdate);
+*/
+
 	startEventScheduler();
 
 	return 0;

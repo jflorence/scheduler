@@ -10,7 +10,7 @@ Process *FcfsDiscipline::selectNextTask(Queue *readyQueue)
 }
 
 
-bool FcfsDiscipline::preempts(TriggeringEvent trigger)
+bool FcfsDiscipline::preempts(TriggeringEvent /*trigger*/)
 {
 	return false;
 }

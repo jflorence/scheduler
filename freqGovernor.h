@@ -2,6 +2,7 @@
 #define FREQGOVERNOR_H
 
 #include "eventType.h"
+#include "processor.h"
 
 class Queue;
 

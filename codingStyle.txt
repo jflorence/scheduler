@@ -1,0 +1,18 @@
+
+
+
+
+-DO NOT replace tabs with spaces
+-opening braces are on their own line
+-all identifiers are in camelCase
+-Class, enum, struct names start with a capital
+-...
+
+
+
+
+
+
+
+
+

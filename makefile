@@ -4,8 +4,8 @@ LDFLAGS =
 
 all: scheduler
 
-scheduler: main.o event.o eventList.o process.o queue.o randomGenerator.o taskScheduler.o fcfsDiscipline.o roundRobinDiscipline.o simpleTemperatureModel.o
-	$(CC) $(CFLAGS) -o scheduler main.o event.o eventList.o process.o queue.o randomGenerator.o taskScheduler.o fcfsDiscipline.o roundRobinDiscipline.o simpleTemperatureModel.o
+scheduler: main.o event.o eventList.o process.o queue.o randomGenerator.o taskScheduler.o fcfsDiscipline.o roundRobinDiscipline.o simpleTemperatureModel.o maxGovernor.o minGovernor.o conservativeGovernor.o processor.o
+	$(CC) $(CFLAGS) -o scheduler main.o event.o eventList.o process.o queue.o randomGenerator.o taskScheduler.o fcfsDiscipline.o roundRobinDiscipline.o simpleTemperatureModel.o maxGovernor.o minGovernor.o conservativeGovernor.o processor.o
 
 main.o: main.cpp
 event.o: event.cpp
@@ -17,9 +17,11 @@ taskScheduler.o: taskScheduler.cpp
 fcfsDiscipline.o: fcfsDiscipline.cpp
 roundRobinDiscipline.o: roundRobinDiscipline.cpp
 simpleTemperatureModel.o: simpleTemperatureModel.cpp
-
-
-
+maxGovernor.o: maxGovernor.cpp
+minGovernor.o: minGovernor.cpp
+conservativeGovernor.o: conservativeGovernor.cpp
+processor.o: processor.cpp
 
 clean:
 	rm ./scheduler
+	rm *.o

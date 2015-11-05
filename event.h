@@ -1,6 +1,8 @@
 #ifndef EVENT_H
 #define EVENT_H
 
+#include "eventType.h"
+
 class Process;
 class EventList;
 
@@ -17,6 +19,7 @@ protected:
 	double time;
 	bool renew;
 	Process *task;
+	TriggeringEvent eventType;
 };
 
 
@@ -24,7 +27,7 @@ protected:
 class NewProcess : public Event
 {
 public:
-	NewProcess(double time, Process *task, bool renew=true) : Event(time, task, renew){};
+	NewProcess(double time, Process *task, bool renew=true) : Event(time, task, renew){eventType=newprocess;};
 	virtual ~NewProcess();
 	virtual void process()=0;
 	virtual void print()=0;
@@ -61,19 +64,28 @@ private:
 class TimeOut : public Event
 {
 public:
-	TimeOut(double time, Process *task, bool renew=true) : Event(time, task, renew){};
-	void process() override;
+	TimeOut(double time, Process *task, bool renew=true) : Event(time, task, renew){eventType=timeout;};
+	virtual void process() override;
 	double getInterval();
 	void setInterval(double inter);
-	void print() override;
-private:
+	virtual void print() override;
+	void setType(TriggeringEvent trigger);
+protected:
 	double interval{2};
+};
+
+class UsageUpdate : public TimeOut
+{
+public:
+	UsageUpdate(double time, Process *task, bool renew=true) : TimeOut(time, task, renew){eventType=usageUpdate;};
+	void process() override;
+	void print() override;
 };
 
 class Ready : public Event
 {
 public:
-	Ready(double time, Process *task, bool renew=false) : Event(time, task, renew){};
+	Ready(double time, Process *task, bool renew=false) : Event(time, task, renew){eventType=ready;};
 	void process() override;
 	void print() override;
 };
@@ -81,7 +93,7 @@ public:
 class Waiting : public Event
 {
 public:
-	Waiting(double time, Process *task, bool renew=false) : Event(time, task, renew){};
+	Waiting(double time, Process *task, bool renew=false) : Event(time, task, renew){eventType=wait;};
 	void process() override;
 	void print() override;
 };
@@ -89,7 +101,7 @@ public:
 class Terminates : public Event
 {
 public:
-	Terminates(double time, Process *task, bool renew=false) : Event(time, task, renew){};
+	Terminates(double time, Process *task, bool renew=false) : Event(time, task, renew){eventType=terminate;};
 	void process() override;
 	void print() override;
 };
@@ -97,7 +109,7 @@ public:
 class StopSimulation : public Event
 {
 public:
-	StopSimulation(double time, Process *task, bool renew=false) : Event(time, task, renew){};
+	StopSimulation(double time, Process *task, bool renew=false) : Event(time, task, renew){eventType=stop;};
 	void process() override;
 	void print() override;
 };

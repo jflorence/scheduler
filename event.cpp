@@ -8,7 +8,7 @@
 #include "randomGenerator.h"
 #include "taskScheduler.h"
 #include "eventType.h"
-
+#include "processor.h"
 
 Event::Event(double t, Process *p, bool r)
 {
@@ -53,7 +53,7 @@ void NewInteractiveProcess::process()
 	queueProcess(task);	
 	scheduleNextEvent();
 	LOG("task "<<task->getPid()<<" created");
-	TaskScheduler::getInstance()->scheduleTask(TriggeringEvent::newprocess, time);
+	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 	return;
 }
 
@@ -96,6 +96,7 @@ void NewJob::process()
 	queueProcess(task);
 	scheduleNextEvent();
 	LOG("job "<<task->getPid()<< "created");
+	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 	return;
 }
 
@@ -121,11 +122,17 @@ void NewJob::print()
 
 void TimeOut::process()
 {
-	Event *e = new TimeOut(time+interval, task);
+	TimeOut *e = new TimeOut(time+interval, task);
+	e->setInterval(interval);
 	EventList::getInstance()->insert(e);
 	LOG("Time out");
-	TaskScheduler::getInstance()->scheduleTask(TriggeringEvent::timeout, time);
+	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 	return;
+}
+
+void TimeOut::setType(TriggeringEvent trigger)
+{
+	eventType = trigger;
 }
 
 double TimeOut::getInterval()
@@ -140,7 +147,28 @@ void TimeOut::setInterval(double inter)
 
 void TimeOut::print()
 {
-	std::cout << getTime() << ": TimeOut\n";
+	std::cout << getTime() << ": TimeOut";
+	if (eventType == freqUpdate)
+	{
+		std::cout << " for frequency update";	
+	}
+	std::cout << "\n";
+}
+
+void UsageUpdate::process()
+{
+	UsageUpdate *e = new UsageUpdate(time+interval, nullptr);
+	e->setInterval(interval);
+	EventList::getInstance()->insert(e);
+	LOG("Usage update");
+	/*This event should be independent of the task scheduler?*/
+	Processor::getInstance()->updateUsage(TaskScheduler::getInstance()->isBusy());
+	return;
+}
+
+void UsageUpdate::print()
+{
+	std::cout << getTime() << ": updating CPU usage\n";
 }
 
 void Ready::process()
@@ -149,7 +177,7 @@ void Ready::process()
 	Queue::getReadyQueue()->add(task);
 	Queue::getWaitQueue()->remove(task);
 	LOG("task "<<task->getPid()<<" becomes ready");
-	TaskScheduler::getInstance()->scheduleTask(TriggeringEvent::ready, time);
+	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 	return;
 }
 
@@ -165,7 +193,7 @@ void Waiting::process()
 	LOG("task "<<task->getPid()<<" is blocked");
 	Event *e = new Ready(time + task->getCurrentIoTime(), task);
 	EventList::getInstance()->insert(e);
-	TaskScheduler::getInstance()->scheduleTask(TriggeringEvent::wait, time);
+	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 	return;
 }
 
@@ -178,14 +206,14 @@ void Terminates::process()
 {
 	assert(task != nullptr);
 	LOG("task "<<task->getPid()<<" terminates");
-	TaskScheduler::getInstance()->scheduleTask(TriggeringEvent::terminate, time);
+	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 	delete task;
 	return;
 }
 
 void Terminates::print()
 {
-	std::cout << getTime() << ": prcess "<<task->getPid()<<" terminates\n";
+	std::cout << getTime() << ": process "<<task->getPid()<<" terminates\n";
 }
 
 

@@ -1,7 +1,9 @@
 #include "taskScheduler.h"
 #include "fcfsDiscipline.h"
 #include "roundRobinDiscipline.h"
-#include "freqGovernor.h"
+#include "minGovernor.h"
+#include "maxGovernor.h"
+//#include "conservativeGovernor.h"
 #include "simpleTemperatureModel.h"
 #include "eventList.h"
 #include "queue.h"
@@ -22,7 +24,7 @@ TaskScheduler *TaskScheduler::getInstance()
 		//scheduler->setDiscipline(new FcfsDiscipline);
 		scheduler->setDiscipline(new RoundRobinDiscipline);
 		scheduler->setTemperatureModel(new SimpleTemperatureModel);
-		scheduler->setFreqGovernor(nullptr);
+		scheduler->setFreqGovernor(new MinGovernor);
 	}
 	return scheduler;
 }
@@ -48,6 +50,7 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 	if (discipline->preempts(trigger) && cpuBusy)
 	{
 		Event *ev = getBurstEnd();
+		/*FIXME If a cpuBurst ends after the end of simulation, ev will be nullptr, and the cpu will be put to sleep.*/
 		if (ev != nullptr)
 		{
 			double newAow = (ev->getTime() - currentTime)*freq;
@@ -59,11 +62,16 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 	}
 
 	updateTemperature();
-
+	
 	runningTask = discipline->selectNextTask(readyQueue);
 
-	if (freqGovernor != nullptr && freqGovernor->freqChangeEvent(trigger))
-		freq = freqGovernor->selectFreq(readyQueue);
+	if (freqGovernor != nullptr)
+	{
+		if (freqGovernor->freqChangeEvent(trigger))
+		{
+			freq = freqGovernor->selectFreq(readyQueue);
+		}
+	}
 
 	readyQueue->remove(runningTask);
 	if (runningTask == nullptr)
@@ -92,10 +100,6 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 	return;
 }
 
-void TaskScheduler::selectTaskAndFreq(Queue *readyQueue)
-{
-	/*not used finally TODO: remove*/
-}
 
 void TaskScheduler::updateTemperature()
 {
@@ -138,7 +142,10 @@ void TaskScheduler::setFreqGovernor(FreqGovernor *gov)
 
 
 
-
+bool TaskScheduler::isBusy()
+{
+	return cpuBusy;
+}
 
 
 
