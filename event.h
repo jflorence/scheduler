@@ -73,6 +73,7 @@ public:
 	virtual std::string getName() override;
 protected:
 	double interval{2};
+	void scheduleAndPrint(TimeOut *nextTimeout);
 };
 
 class UsageUpdate : public TimeOut
@@ -81,6 +82,7 @@ public:
 	UsageUpdate(double time, Process *task=nullptr, bool renew=true) : TimeOut(time, task, renew){eventType=usageUpdate;};
 	void process() override;
 	std::string getName() override;
+protected:
 };
 
 class FreqUpdate : public TimeOut

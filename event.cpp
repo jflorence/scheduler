@@ -145,13 +145,19 @@ void NewJob::scheduleNextEvent()
 
 void TimeOut::process()
 {
-	TimeOut *e = new TimeOut(time+interval, task); /*TODO: check what is this task parameter*/
-	e->setInterval(interval);
-	EventList::getInstance()->insert(e);
-	print();
+	doProcess(new TimeOut(time+interval, task));	
 	TaskScheduler::getInstance()->scheduleTask(eventType, time);
-	
 	return;
+}
+
+void TimeOut::scheduleAndPrint(TimeOut *nextTimeout)
+{
+	if (renew)
+	{
+		nextTimeout->setInterval(interval);
+		EventList::getInstance()->insert(nextTimeout);
+	}
+	print();
 }
 
 std::string TimeOut::getName()
@@ -172,10 +178,7 @@ void TimeOut::setInterval(double inter)
 
 void UsageUpdate::process()
 {
-	UsageUpdate *e = new UsageUpdate(time+interval);
-	e->setInterval(interval);
-	EventList::getInstance()->insert(e);
-	print();
+	scheduleAndPrint(new UsageUpdate(time+interval));
 	Processor::getInstance()->updateUsage(TaskScheduler::getInstance()->isBusy());
 	return;
 }
@@ -187,10 +190,8 @@ std::string UsageUpdate::getName()
 
 void FreqUpdate::process()
 {
-	FreqUpdate *e = new FreqUpdate(time+interval);
-	e->setInterval(interval);
-	EventList::getInstance()->insert(e);
-	print();
+	scheduleAndPrint(new FreqUpdate(time+interval));
+	/*TODO: do what?*/
 	return;
 }
 

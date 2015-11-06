@@ -1,6 +1,7 @@
+TODO: the factoring of timeout can be improved. Create a virtual fct getNextTimeOut, and a virtual fct doWork().
+then process() needs not be overriden
 
-
-FIXME: we can factor some stuff in the timeout hierarchy for the process() function if we pass around the new e
+FIXME: FreqUpdate does not trigger anything? 
 
 TODO: make the color printing os independent
 
