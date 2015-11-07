@@ -129,7 +129,8 @@ std::string NewJob::getName()
 
 Process *NewJob::createTask()
 {
-	Process *p = Process::createRealTimeTask(10, 35, 30, ((pid != -1) ? pid:Process::getNewPid()));
+	double deadline = 30;
+	Process *p = Process::createRealTimeTask(10, 35, deadline, ((pid != -1) ? pid:Process::getNewPid()), deadline + time);
 
 	return p;
 }
@@ -138,14 +139,16 @@ void NewJob::scheduleNextEvent()
 {
 	if(!renew)
 		return;
-	Event *e = new NewJob(time + task->getPeriod(), new Process(*task), false);
+	NewJob *e = new NewJob(time + task->getPeriod(), new Process(*task), true);
+	e->task->setDeadlineTime(e->getTime() + task->getDeadline());
+	e->task->incrementJobNumber();
 	EventList::getInstance()->insert(e);
 }
 
 
 void TimeOut::process()
 {
-	doProcess(new TimeOut(time+interval, task));	
+	scheduleAndPrint(new TimeOut(time+interval, task));	
 	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 	return;
 }

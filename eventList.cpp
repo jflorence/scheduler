@@ -25,7 +25,6 @@ Event * EventList::insert(Event *e)
 	if (e == nullptr)
 		return nullptr;
 	double time = e->getTime();
-	
 
 	if(time > endTime)
 	{

@@ -1,11 +1,15 @@
 #include "fcfsDiscipline.h"
-#include "queue.h"
+#include <cassert>
 #include <iostream>
+#include "queue.h"
 
-Process *FcfsDiscipline::selectNextTask(Queue *readyQueue, Process * /*running*/)
+Process *FcfsDiscipline::selectNextTask(Queue *readyQueue, Process * running)
 {
-	if (readyQueue->begin() == readyQueue->end())
-		std::cout << "fcfs is returning empty\n";
+	if (readyQueue->isEmpty())
+	{
+		assert(running == nullptr);
+		return running; /*For a fcfs, this should be nullptr*/
+	}
 	return (*readyQueue->begin());
 }
 

@@ -27,6 +27,8 @@ private:
 	
 	void updateTemperature();
 	void printStatus();
+	void printRunningProcess();
+	void printInvocation();
 	
 	SchedulingDiscipline *discipline{nullptr};
 	TemperatureModel *temperatureModel{nullptr};
@@ -43,6 +45,7 @@ private:
 	double power{0.0};
 	double capa{1.0};
 	double leakage{1.0};
+	
 };
 
 #endif

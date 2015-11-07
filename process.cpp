@@ -28,6 +28,7 @@ Process::Process(const Process& task)
 	RT = task.RT;
 	deadline = task.deadline;
 	period = task.period;
+	jobNumber = task.jobNumber;
 }
 
 Process::~Process()
@@ -109,7 +110,7 @@ Process *Process::createProcess(double cpuLambda, double ioLambda)
 	return p;
 }
 
-Process *Process::createRealTimeTask(double aow, double T, double dl, int pid)
+Process *Process::createRealTimeTask(double aow, double T, double dl, int pid, double dlTime)
 {
 	int nbBursts = 1;
 	double *cpuBurst = new double[nbBursts];
@@ -117,15 +118,26 @@ Process *Process::createRealTimeTask(double aow, double T, double dl, int pid)
 	cpuBurst[0] = aow;
 	ioBurst[0] = 0;
 	Process *p = new Process(pid, nbBursts, cpuBurst, ioBurst);
-	p->setRtParams(dl, T);
+	p->setRtParams(dl, T, dlTime);
 	return p;
 }
 
-void Process::setRtParams(double dl, double T)
+void Process::setRtParams(double dl, double T, double dlTime)
 {
 	deadline = dl;
 	period = T;
 	RT = true;
+	deadlineTime = dlTime;
+}
+
+double Process::getDeadline()
+{
+	return deadline;
+}
+
+void Process::setDeadlineTime(double dlTime)
+{
+	deadlineTime = dlTime;
 }
 
 bool Process::isRealTime()
@@ -152,7 +164,10 @@ double Process::getPeriod()
 	return period;
 }
 
-
+double Process::getDeadlineTime()
+{
+	return deadlineTime;
+}
 
 void Process::print(std::ostream& stream)
 {
@@ -178,8 +193,15 @@ void Process::print(std::ostream& stream)
 }
 
 
+void Process::incrementJobNumber()
+{
+	jobNumber++;
+}
 
-
+unsigned int Process::getJobNumber()
+{
+	return jobNumber;
+}
 
 
 

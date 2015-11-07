@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "conservativeGovernor.h"
+#include "edfDiscipline.h"
 #include "event.h"
 #include "eventList.h"
 #include "eventType.h"
@@ -14,6 +15,7 @@
 #include "minGovernor.h"
 #include "process.h"
 #include "queue.h"
+#include "rmsDiscipline.h"
 #include "roundRobinDiscipline.h"
 #include "simpleTemperatureModel.h"
 
@@ -25,7 +27,10 @@ TaskScheduler *TaskScheduler::getInstance()
 	{
 		scheduler = new TaskScheduler();
 		//scheduler->setDiscipline(new FcfsDiscipline);
-		scheduler->setDiscipline(new RoundRobinDiscipline);
+		//scheduler->setDiscipline(new RoundRobinDiscipline);
+		//scheduler->setDiscipline(new PriorityDiscipline);
+		//scheduler->setDiscipline(new RmsDiscipline);
+		scheduler->setDiscipline(new EdfDiscipline);
 		scheduler->setTemperatureModel(new SimpleTemperatureModel);
 		//scheduler->setFreqGovernor(new MinGovernor);
 		scheduler->setFreqGovernor(new ConservativeGovernor);
@@ -43,20 +48,29 @@ void TaskScheduler::printStatus()
 void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 {
 	currentTime = time;
-	//std::cout << currentTime << ": Task scheduler invoked\n";
 	Queue *readyQueue = Queue::getReadyQueue();
 	EventList *eventList = EventList::getInstance();
+	if (trigger == terminate || trigger == wait)
+	{
+		runningTask = nullptr; /*Do we need this line?*/
+	}
 	if (trigger != wait && trigger != terminate && !discipline->preempts(trigger) && cpuBusy)
 	{
 		return;
 	}
-
-	std::cout << "\033[34m"<< "    Scheduler invoked. Ready queue contains " << readyQueue->getDisplay() << "\033[0m" <<"\n";
-
+	printInvocation();
+	
+	updateTemperature();
+		
+	Process *nextTask = discipline->selectNextTask(readyQueue, runningTask);
+	
+	if (nextTask == runningTask && runningTask != nullptr)
+	{
+		return;
+	}
 	if (discipline->preempts(trigger) && cpuBusy)
 	{
 		Event *ev = getBurstEnd();
-		/*FIXME If a cpuBurst ends after the end of simulation, ev will be nullptr, and the cpu will be put to sleep.*/
 		if (ev != nullptr)
 		{
 			double newAow = (ev->getTime() - currentTime)*freq;
@@ -66,44 +80,49 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 			delete ev;
 		}
 	}
-	updateTemperature();
-	
-	runningTask = discipline->selectNextTask(readyQueue, runningTask);
-	if (freqGovernor != nullptr)
+
+	readyQueue->remove(nextTask);
+	runningTask = nextTask;
+
+	if (freqGovernor != nullptr && freqGovernor->freqChangeEvent(trigger))
 	{
-		if (freqGovernor->freqChangeEvent(trigger))
-		{
-			freq = freqGovernor->selectFreq(readyQueue);
-		}
+		freq = freqGovernor->selectFreq(readyQueue);
 	}
 
-	readyQueue->remove(runningTask);
-	if (runningTask == nullptr)
+	cpuBusy = (runningTask != nullptr);
+	if (cpuBusy)
 	{
-		cpuBusy = false;
-		std::cout << "\033[1;34m" << "    Processor sleeping"<<"\033[0m"<<"\n";
-		return;
-	}
-	std::cout << "\033[1;34m"<<"    Currently running process number "<<runningTask->getPid()<< "\033[0m"<<"\n";
-	cpuBusy = true;
-	double newTime = runningTask->getCurrentCpuAow()/freq;
-	newTime += currentTime;
-	bool wait = true;
-	wait = runningTask->advanceBurst();
-	Event *e;
-	if (wait)
-	{
-		e = new Waiting(newTime, runningTask);
-	}
-	else
-	{
-		e = new Terminates(newTime, runningTask);
-	}
+		double newTime = currentTime + runningTask->getCurrentCpuAow()/freq;
+		bool wait = runningTask->advanceBurst();
+		Event *e = wait ? (Event*) new Waiting(newTime, runningTask) : (Event*) new Terminates(newTime, runningTask);
 	
-	setBurstEnd(eventList->insert(e));
+		setBurstEnd(eventList->insert(e));
+	}
+	printRunningProcess();
 	return;
 }
 
+void TaskScheduler::printInvocation()
+{
+	std::cout << "\033[34m"<< "    Scheduler invoked. Ready queue contains " 
+		<< Queue::getReadyQueue()->getDisplay() << "\033[0m" <<"\n";
+}
+
+void TaskScheduler::printRunningProcess()
+{
+	if (cpuBusy)
+	{
+		std::cout << "\033[1;34m"<<"    Currently running process number "<<runningTask->getPid();
+		if (runningTask->isRealTime())
+			std::cout << ":"<< runningTask->getJobNumber();
+	
+		std::cout << "\033[0m"<<"\n";
+	}
+	else
+	{
+		std::cout << "\033[1;34m" << "    Processor sleeping"<<"\033[0m"<<"\n";
+	}
+}
 
 void TaskScheduler::updateTemperature()
 {

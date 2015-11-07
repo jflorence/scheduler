@@ -12,7 +12,7 @@ class Process
 public:
 	static Process *createJob(int pid, double aow/*amount of work*/);
 	static Process *createProcess(double cpuLambda, double ioLambda);
-	static Process *createRealTimeTask(double aow, double T, double dl, int pid);
+	static Process *createRealTimeTask(double aow, double T, double dl, int pid, double dlTime);
 	static int getNewPid();
 	
 	Process(int p, int nbBursts, double *cpuBursts, double *ioBursts, int priority = 0);
@@ -27,11 +27,15 @@ public:
 	void decrementBurst();
 	double getCurrentCpuAow();
 	double getCurrentIoTime();
-	void setRtParams(double dl, double T);
+	void setRtParams(double dl, double T, double dlTime);
 	bool isRealTime();
 	double getPeriod();
+	double getDeadline();
+	double getDeadlineTime();
+	void setDeadlineTime(double dlTime);
 	void print(std::ostream& stream);
-	
+	void incrementJobNumber();
+	unsigned int getJobNumber();
 	const double powerCoeff{1.0};
 private:
 	int pid;
@@ -40,9 +44,13 @@ private:
 	int currentBurst;
 	int nbBursts; /*This is the nb of cpu bursts. there qre n-1 io bursts.*/
 	int priority;
+
+	/*Those are the real time parameters. Maybe would it be better to put them in an aggregated class*/
 	bool RT{false};
 	double deadline{INFINITY};
+	double deadlineTime;
 	double period{INFINITY};
+	unsigned int jobNumber{0};
 };
 
 
