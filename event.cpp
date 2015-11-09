@@ -148,19 +148,24 @@ void NewJob::scheduleNextEvent()
 
 void TimeOut::process()
 {
-	scheduleAndPrint(new TimeOut(time+interval, task));	
-	TaskScheduler::getInstance()->scheduleTask(eventType, time);
-	return;
-}
-
-void TimeOut::scheduleAndPrint(TimeOut *nextTimeout)
-{
+	TimeOut *nextTimeout = getNextTimeout();
 	if (renew)
 	{
 		nextTimeout->setInterval(interval);
 		EventList::getInstance()->insert(nextTimeout);
 	}
 	print();
+	doWork();
+	return;
+}
+void TimeOut::doWork()
+{
+	TaskScheduler::getInstance()->scheduleTask(eventType, time);
+}
+
+TimeOut *TimeOut::getNextTimeout()
+{
+	return new TimeOut(time+interval);
 }
 
 std::string TimeOut::getName()
@@ -179,11 +184,14 @@ void TimeOut::setInterval(double inter)
 	interval = inter;
 }
 
-void UsageUpdate::process()
+void UsageUpdate::doWork()
 {
-	scheduleAndPrint(new UsageUpdate(time+interval));
 	Processor::getInstance()->updateUsage(TaskScheduler::getInstance()->isBusy());
-	return;
+}
+
+TimeOut* UsageUpdate::getNextTimeout()
+{
+	return new UsageUpdate(time+interval);
 }
 
 std::string UsageUpdate::getName()
@@ -191,11 +199,15 @@ std::string UsageUpdate::getName()
 	return "Usage update";
 }
 
-void FreqUpdate::process()
+void FreqUpdate::doWork()
 {
-	scheduleAndPrint(new FreqUpdate(time+interval));
-	/*TODO: do what?*/
+	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 	return;
+}
+
+TimeOut *FreqUpdate::getNextTimeout()
+{
+	return new FreqUpdate(time+interval);
 }
 
 std::string FreqUpdate::getName()

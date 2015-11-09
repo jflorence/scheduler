@@ -91,7 +91,10 @@ std::string Queue::getDisplay()
 	std::ostringstream stream;
 	for (auto it = queue.begin(); it != queue.end(); it++)
 	{
-		stream << (*it)->getPid()<<"("<<(*it)->getDeadlineTime()<<")" << " ";
+		stream << (*it)->getPid();
+		if ((*it)->isRealTime())
+			stream <<"("<<(*it)->getDeadlineTime()<<")";
+		stream << " ";
 	}
 	return stream.str();
 }

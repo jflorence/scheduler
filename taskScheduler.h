@@ -23,12 +23,14 @@ public:
 	void setFreqGovernor(FreqGovernor *gov);
 	bool isBusy();
 	void printReports();
+	void scheduleEndOfBurst();
 private:
 	
 	void updateTemperature();
 	void printStatus();
 	void printRunningProcess();
 	void printInvocation();
+	void putRunningTaskBackToReadyQueue();
 	
 	SchedulingDiscipline *discipline{nullptr};
 	TemperatureModel *temperatureModel{nullptr};

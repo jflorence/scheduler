@@ -27,10 +27,10 @@ TaskScheduler *TaskScheduler::getInstance()
 	{
 		scheduler = new TaskScheduler();
 		//scheduler->setDiscipline(new FcfsDiscipline);
-		//scheduler->setDiscipline(new RoundRobinDiscipline);
+		scheduler->setDiscipline(new RoundRobinDiscipline);
 		//scheduler->setDiscipline(new PriorityDiscipline);
 		//scheduler->setDiscipline(new RmsDiscipline);
-		scheduler->setDiscipline(new EdfDiscipline);
+		//scheduler->setDiscipline(new EdfDiscipline);
 		scheduler->setTemperatureModel(new SimpleTemperatureModel);
 		//scheduler->setFreqGovernor(new MinGovernor);
 		scheduler->setFreqGovernor(new ConservativeGovernor);
@@ -49,10 +49,10 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 {
 	currentTime = time;
 	Queue *readyQueue = Queue::getReadyQueue();
-	EventList *eventList = EventList::getInstance();
-	if (trigger == terminate || trigger == wait)
+
+	if (freqGovernor != nullptr && freqGovernor->freqChangeEvent(trigger))
 	{
-		runningTask = nullptr; /*Do we need this line?*/
+		freq = freqGovernor->selectFreq(readyQueue);
 	}
 	if (trigger != wait && trigger != terminate && !discipline->preempts(trigger) && cpuBusy)
 	{
@@ -61,45 +61,60 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 	printInvocation();
 	
 	updateTemperature();
-		
+
+	if (trigger == terminate || trigger == wait)
+	{
+		runningTask = nullptr;
+	}
 	Process *nextTask = discipline->selectNextTask(readyQueue, runningTask);
 	
 	if (nextTask == runningTask && runningTask != nullptr)
 	{
 		return;
 	}
-	if (discipline->preempts(trigger) && cpuBusy)
+	if (discipline->preempts(trigger))
 	{
-		Event *ev = getBurstEnd();
-		if (ev != nullptr)
-		{
-			double newAow = (ev->getTime() - currentTime)*freq;
-			runningTask->updateCurrentAow(newAow);
-			eventList->remove(ev);
-			readyQueue->add(runningTask);
-			delete ev;
-		}
+		putRunningTaskBackToReadyQueue();
 	}
 
-	readyQueue->remove(nextTask);
 	runningTask = nextTask;
+	readyQueue->remove(nextTask);
 
-	if (freqGovernor != nullptr && freqGovernor->freqChangeEvent(trigger))
-	{
-		freq = freqGovernor->selectFreq(readyQueue);
-	}
 
 	cpuBusy = (runningTask != nullptr);
-	if (cpuBusy)
-	{
-		double newTime = currentTime + runningTask->getCurrentCpuAow()/freq;
-		bool wait = runningTask->advanceBurst();
-		Event *e = wait ? (Event*) new Waiting(newTime, runningTask) : (Event*) new Terminates(newTime, runningTask);
-	
-		setBurstEnd(eventList->insert(e));
-	}
+	scheduleEndOfBurst();
 	printRunningProcess();
 	return;
+}
+
+void TaskScheduler::scheduleEndOfBurst()
+{
+	EventList *eventList = EventList::getInstance();
+	if (!cpuBusy)
+		return;
+
+	double newTime = currentTime + runningTask->getCurrentCpuAow()/freq;
+	bool wait = runningTask->advanceBurst();
+	Event *e = wait ? (Event*) new Waiting(newTime, runningTask) : (Event*) new Terminates(newTime, runningTask);
+
+	setBurstEnd(eventList->insert(e));
+}
+
+void TaskScheduler::putRunningTaskBackToReadyQueue()
+{
+	EventList *eventList = EventList::getInstance();
+	Queue *readyQueue = Queue::getReadyQueue();
+	if (!cpuBusy)
+		return;
+	Event *ev = getBurstEnd();
+	if (ev != nullptr)
+	{
+		double newAow = (ev->getTime() - currentTime)*freq;
+		runningTask->updateCurrentAow(newAow);
+		eventList->remove(ev);
+		readyQueue->add(runningTask);
+		delete ev;
+	}
 }
 
 void TaskScheduler::printInvocation()

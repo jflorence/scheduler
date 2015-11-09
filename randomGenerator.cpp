@@ -37,6 +37,7 @@ double RandomGenerator::drawExp(double lambda)
 
 void RandomGenerator::seed(time_t seed)
 {
+	std::cout << "\033[1;32m" << "Using seed "<< seed << "\033[0m" << "\n";;
 	gen.seed(seed);
 }
 

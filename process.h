@@ -41,14 +41,14 @@ private:
 	int pid;
 	double *cpuBurst;/*This is an array of aow*/
 	double *ioBurst;/*This is an array of times spent waiting*/
-	int currentBurst;
+	int currentBurst{0};
 	int nbBursts; /*This is the nb of cpu bursts. there qre n-1 io bursts.*/
-	int priority;
+	int priority{0};
 
 	/*Those are the real time parameters. Maybe would it be better to put them in an aggregated class*/
 	bool RT{false};
 	double deadline{INFINITY};
-	double deadlineTime;
+	double deadlineTime{0.0};
 	double period{INFINITY};
 	unsigned int jobNumber{0};
 };

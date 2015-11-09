@@ -67,21 +67,23 @@ class TimeOut : public Event
 {
 public:
 	TimeOut(double time, Process *task=nullptr, bool renew=true) : Event(time, task, renew){eventType=timeout;};
-	virtual void process() override;
+	void process() override;
+	virtual void doWork();
+	virtual TimeOut *getNextTimeout();
 	double getInterval();
 	void setInterval(double inter);
 	virtual std::string getName() override;
 protected:
 	double interval{2};
-	void scheduleAndPrint(TimeOut *nextTimeout);
 };
 
 class UsageUpdate : public TimeOut
 {
 public:
 	UsageUpdate(double time, Process *task=nullptr, bool renew=true) : TimeOut(time, task, renew){eventType=usageUpdate;};
-	void process() override;
 	std::string getName() override;
+	void doWork() override;
+	TimeOut *getNextTimeout() override;
 protected:
 };
 
@@ -89,8 +91,9 @@ class FreqUpdate : public TimeOut
 {
 public:
 	FreqUpdate(double time, Process *task=nullptr, bool renew=true) : TimeOut(time, task, renew){eventType=freqUpdate;};
-	void process();
 	std::string getName();
+	TimeOut *getNextTimeout() override;
+	void doWork() override;
 };
 
 class Ready : public Event

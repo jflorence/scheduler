@@ -135,10 +135,6 @@ double Process::getDeadline()
 	return deadline;
 }
 
-void Process::setDeadlineTime(double dlTime)
-{
-	deadlineTime = dlTime;
-}
 
 bool Process::isRealTime()
 {
@@ -162,6 +158,11 @@ void Process::updateCurrentAow(double aow)
 double Process::getPeriod()
 {
 	return period;
+}
+
+void Process::setDeadlineTime(double dlTime)
+{
+	deadlineTime = dlTime;
 }
 
 double Process::getDeadlineTime()
