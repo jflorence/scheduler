@@ -8,7 +8,7 @@ Process *PriorityDiscipline::selectNextTask(Queue *readyQueue, Process *running)
 {
 	updatePriorities(readyQueue, running);
 
-	int highestPriority = -INFINITY;
+	int highestPriority = std::numeric_limits<int>::min();
 	Process *candidate = running;
 	if (running != nullptr)
 		highestPriority = candidate->getPriority();

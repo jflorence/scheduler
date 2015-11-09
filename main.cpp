@@ -19,9 +19,11 @@ int main()
 	*/
 	simulator.createInteractiveProcess(1.0);
 	simulator.createInteractiveProcess(1.0);
+	simulator.createInteractiveProcess(1.0);
+	simulator.createInteractiveProcess(1.0);
 
-	simulator.setUsageCalculationTimeout(1.0, 2.0);
-	simulator.setFreqUpdate(1.0, 10.0);
+	//simulator.setUsageCalculationTimeout(1.0, 2.0);
+	//simulator.setFreqUpdate(1.0, 10.0);
 	simulator.setSchedulerTimeout(1.0, 2.0);
 	
 	simulator.endSimulation(100.0);	

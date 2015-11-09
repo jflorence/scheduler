@@ -14,7 +14,7 @@ public:
 	static Process *createProcess(double cpuLambda, double ioLambda);
 	static Process *createRealTimeTask(double aow, double T, double dl, int pid, double dlTime);
 	static int getNewPid();
-	
+public:
 	Process(int p, int nbBursts, double *cpuBursts, double *ioBursts, int priority = 0);
 	Process(const Process& task);
 	~Process();
