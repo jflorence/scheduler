@@ -144,7 +144,7 @@ void TaskScheduler::updateTemperature()
 	double runningInterval = currentTime - previousTime;
 	energy += power*runningInterval;
 	previousTime = currentTime;
-	double powerCoeff = (runningTask==nullptr) ? 1.0: runningTask->powerCoeff;
+	double powerCoeff = (runningTask==nullptr) ? 0.0: runningTask->powerCoeff;
 	power = freq*freq*freq*capa*powerCoeff + leakage;
 
 	temperatureModel->updateTemperature(runningInterval, power);

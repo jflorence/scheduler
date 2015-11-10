@@ -26,7 +26,7 @@ int main()
 	//simulator.setFreqUpdate(1.0, 10.0);
 	simulator.setSchedulerTimeout(1.0, 2.0);
 	
-	simulator.endSimulation(100.0);	
+	simulator.endSimulation(1000.0);	
 
 	simulator.startScheduler();
 
