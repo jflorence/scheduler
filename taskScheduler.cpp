@@ -126,20 +126,19 @@ void TaskScheduler::printInvocation()
 
 void TaskScheduler::printRunningProcess()
 {
+	Log log;
 	if (cpuBusy)
 	{
-		std::cout << "\033[1;34m"<<"    Currently running process number "<<runningTask->getPid();
-		/*Log log;
 		log << Log::Color::blue<<"    Currently running process number "<<runningTask->getPid();
-		*/
+		
 		if (runningTask->isRealTime())
-			std::cout << ":"<< runningTask->getJobNumber();
+			log << ":"<< runningTask->getJobNumber();
 	
-		std::cout << "\033[0m"<<"\n";
+		log << Log::Color::normal << "\n";
 	}
 	else
 	{
-		std::cout << "\033[1;34m" << "    Processor sleeping"<<"\033[0m"<<"\n";
+		log << Log::Color::blue << "    Processor sleeping" << Log::Color::normal << "\n";
 	}
 }
 
@@ -160,7 +159,8 @@ void TaskScheduler::updateTemperature()
 void TaskScheduler::setDiscipline(SchedulingDiscipline *disc)
 {
 	discipline = disc;
-	std::cout <<"\033[1;32m"<< "Using scheduling discipline "<<disc->getName()<<"\033[0m"<<"\n";
+	Log log;
+	log << Log::Color::green << "Using scheduling discipline " << disc->getName() << Log::Color::normal << "\n";
 }
 
 void TaskScheduler::setTemperatureModel(TemperatureModel *model)
@@ -180,7 +180,8 @@ Event *TaskScheduler::getBurstEnd()
 void TaskScheduler::setFreqGovernor(FreqGovernor *gov)
 {
 	freqGovernor = gov;
-	std::cout <<"\033[1;32m"<< "Using frequency governor "<<gov->getName()<<"\033[0m"<<"\n";
+	Log log;
+	log << Log::Color::green << "Using frequency governor "<<gov->getName()<< Log::Color::normal <<"\n";
 }
 
 

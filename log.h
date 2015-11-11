@@ -4,21 +4,40 @@
 #include <iostream>
 
 
-#if 0
 class Log
 {
 public:
-	enum Color{white, red, blue, green};
-	void print(std::string);
+	enum Color{normal, red, blue, green};
+	template<typename T> void print(T);
 private:
 	std::ostream& outstream = std::cout;
 };
 
 
 
-Log& operator<<(Log& log, Log::Color col);
 
-Log& operator<<(Log& log, std::string str);
+
+/*template<>
+void Log::print<>(Log::Color color);
+*/
+
+
+template<typename T>
+void Log::print(T data)
+{
+        outstream << data;
+}
+
+
+
+
+template<typename T>
+Log& operator<<(Log& log, T data)
+{
+	log.print(data);
+	return log;
+}
+
+
 #endif
 
-#endif

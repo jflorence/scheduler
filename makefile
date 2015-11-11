@@ -8,25 +8,25 @@ all: scheduler
 scheduler: $(OBJ) 
 	$(CC) $(CFLAGS) $(OBJ) -o scheduler
 
-main.o: main.cpp
-event.o: event.cpp
-eventList.o: eventList.cpp
-process.o: process.cpp
-queue.o: queue.cpp
-randomGenerator.o: randomGenerator.cpp
-taskScheduler.o: taskScheduler.cpp
-fcfsDiscipline.o: fcfsDiscipline.cpp
-roundRobinDiscipline.o: roundRobinDiscipline.cpp
-simpleTemperatureModel.o: simpleTemperatureModel.cpp
-maxGovernor.o: maxGovernor.cpp
-minGovernor.o: minGovernor.cpp
-conservativeGovernor.o: conservativeGovernor.cpp
-processor.o: processor.cpp
-priorityDiscipline.o: priorityDiscipline.cpp
-Rmsdiscipline.o: rmsDiscipline.cpp
-schedulingSimulator.o: schedulingSimulator.cpp
-edfDiscipline.o: edfDiscipline.cpp
-log.o: log.cpp
+main.o: main.cpp log.h
+event.o: event.cpp log.h
+eventList.o: eventList.cpp log.h
+process.o: process.cpp log.h
+queue.o: queue.cpp log.h
+randomGenerator.o: randomGenerator.cpp log.h
+taskScheduler.o: taskScheduler.cpp log.h
+fcfsDiscipline.o: fcfsDiscipline.cpp log.h
+roundRobinDiscipline.o: roundRobinDiscipline.cpp log.h
+simpleTemperatureModel.o: simpleTemperatureModel.cpp log.h
+maxGovernor.o: maxGovernor.cpp log.h
+minGovernor.o: minGovernor.cpp log.h
+conservativeGovernor.o: conservativeGovernor.cpp log.h
+processor.o: processor.cpp log.h
+priorityDiscipline.o: priorityDiscipline.cpp log.h
+Rmsdiscipline.o: rmsDiscipline.cpp log.h
+schedulingSimulator.o: schedulingSimulator.cpp log.h
+edfDiscipline.o: edfDiscipline.cpp log.h
+log.o: log.cpp log.h
 
 clean:
 	rm -f ./scheduler
