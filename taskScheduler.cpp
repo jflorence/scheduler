@@ -11,6 +11,7 @@
 #include "eventList.h"
 #include "eventType.h"
 #include "fcfsDiscipline.h"
+#include "log.h"
 #include "maxGovernor.h"
 #include "minGovernor.h"
 #include "process.h"
@@ -128,6 +129,9 @@ void TaskScheduler::printRunningProcess()
 	if (cpuBusy)
 	{
 		std::cout << "\033[1;34m"<<"    Currently running process number "<<runningTask->getPid();
+		/*Log log;
+		log << Log::Color::blue<<"    Currently running process number "<<runningTask->getPid();
+		*/
 		if (runningTask->isRealTime())
 			std::cout << ":"<< runningTask->getJobNumber();
 	
