@@ -5,7 +5,8 @@
 -DO NOT replace tabs with spaces
 -opening braces are on their own line
 -all identifiers are in camelCase
--Class, enum, struct names start with a capital
+-Class, enum, struct type names start with a capital
+-A struct should be used exactly as if it were a C-style struct.
 -...
 
 

@@ -67,11 +67,10 @@ Process *Processor::getRunningTask()
 
 void Processor::updateTemperature(double timeInterval)
 {
-        energy += power*timeInterval;
-        double powerCoeff = (runningTask==nullptr) ? 0.0: runningTask->powerCoeff;
-        power = freq*freq*freq*capa*powerCoeff + leakage;
+	/*FIXME where should the powerCoeff of an idle processor be defined?*/
+	double powerCoeff = (runningTask==nullptr) ? 0.0: runningTask->powerCoeff;
 
-        temperatureModel->updateTemperature(timeInterval, power);
+	temperatureModel->updateTemperature(timeInterval, &powerParams, powerCoeff, freq);
 
 }
 

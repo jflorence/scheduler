@@ -1,6 +1,8 @@
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
 
+#include "temperatureModel.h"
+
 class Process;
 class TemperatureModel;
 class Processor
@@ -29,15 +31,11 @@ private:
 	/*FIXME I have no clue about what is a good alpha value.
 	It depends on the UsageUpdate event period and on the governor invocation period.*/
 	double alpha{0.7};
+	double freq{1.0};
 	Process *runningTask{nullptr};
 
+	struct PowerParams powerParams;
 	TemperatureModel *temperatureModel{nullptr};
-
-	double leakage{1.0};
-	double capa{1.0};
-	double power{0.0};
-	double energy{0.0};
-	double freq{1.0};
 
 
 

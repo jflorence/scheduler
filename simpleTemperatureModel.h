@@ -2,13 +2,13 @@
 #define SIMPLETEMPERATUREMODEL_H
 
 #include <utility>
-
+#include "processor.h"
 #include "temperatureModel.h"
 
 class SimpleTemperatureModel : public TemperatureModel
 {
 public:
-	double updateTemperature(double timeInterval, double power);
+	double updateTemperature(double timeInterval, struct PowerParams *params, double taskPowerCoeff, double freq);
 	std::vector<std::pair<double, double>> getTemperatureHistory();
 private:
 	double T0{20.0}; /*previous temperature*/
