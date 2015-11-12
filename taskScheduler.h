@@ -20,9 +20,9 @@ public:
 	void scheduleTask(TriggeringEvent trigger, double currentTime);
 	void setDiscipline(SchedulingDiscipline *discipline);
 	void setFreqGovernor(FreqGovernor *gov);
-	bool isBusy();
 	void printReports();
 	void scheduleEndOfBurst(Process *runningTask);
+	void clearRunningTask(Process *p);
 private:
 	
 	void updateTemperature();
@@ -35,11 +35,10 @@ private:
 	FreqGovernor *freqGovernor{nullptr};
 	
 	Process *runningTask{nullptr};
-	double freq{1};
-	bool cpuBusy{false};
 	Event *burstEnd;
 	void setBurstEnd(Event *e);
 	Event *getBurstEnd();
+	
 	double previousTime{0.0};
 	double currentTime{0.0};
 	

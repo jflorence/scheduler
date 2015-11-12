@@ -238,7 +238,9 @@ void Waiting::process()
 	print();
 	Event *e = new Ready(time + task->getCurrentIoTime(), task);
 	EventList::getInstance()->insert(e);
-	TaskScheduler::getInstance()->scheduleTask(eventType, time);
+	TaskScheduler *scheduler = TaskScheduler::getInstance();
+	scheduler->clearRunningTask(task);
+	scheduler->scheduleTask(eventType, time);
 	return;
 }
 
@@ -252,7 +254,9 @@ void Terminates::process()
 {
 	assert(task != nullptr);
 	print();
-	TaskScheduler::getInstance()->scheduleTask(eventType, time);
+	TaskScheduler *scheduler = TaskScheduler::getInstance();
+	scheduler->clearRunningTask(task);
+	scheduler->scheduleTask(eventType, time);
 	delete task;
 	return;
 }

@@ -65,6 +65,9 @@ void SchedulingSimulator::startScheduler()
                 e->process();
                 delete e;*/
                 Event *e = list->getHead();
+		double timeInterval = e->getTime() - previousTime;
+		previousTime = e->getTime();
+		System::getInstance()->updateTemperature(timeInterval);
                 e->process();
                 list->pop();
                 delete e;

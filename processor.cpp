@@ -39,8 +39,15 @@ void Processor::updateUsage(bool busy)
 }
 
 
+bool Processor::isBusy()
+{
+	return busy;
+}
 
-
+void Processor::setBusy(bool b)
+{
+	busy = b;
+}
 
 
 bool Processor::isRunning(Process *p)

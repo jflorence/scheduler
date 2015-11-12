@@ -24,6 +24,8 @@ public:
 	void setTemperatureModel(TemperatureModel *);
 	void updateTemperature(double timeInterval);
 	void printTemperatureReport();
+	bool isBusy();
+	void setBusy(bool busy);
 private:
 	const double maxFreq{2.0};
 	const double minFreq{1.0};
@@ -37,7 +39,7 @@ private:
 	struct PowerParams powerParams;
 	TemperatureModel *temperatureModel{nullptr};
 
-
+	bool busy{false};
 
 };
 

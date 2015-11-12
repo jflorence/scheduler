@@ -14,5 +14,7 @@ public:
 	void setFreqUpdate(double start, double interval);
 	void setSchedulerTimeout(double start, double interval);
 	void startScheduler();
+private:
+	double previousTime{0.0};
 };
 #endif

@@ -19,6 +19,7 @@
 #include "rmsDiscipline.h"
 #include "roundRobinDiscipline.h"
 #include "simpleTemperatureModel.h"
+#include "system.h"
 
 TaskScheduler *TaskScheduler::scheduler = nullptr;
 
@@ -45,34 +46,40 @@ void TaskScheduler::printStatus()
 	Queue::getWaitQueue()->print();
 }
 
-void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
+void clearRunningTask(Process *p)
 {
+	Processor *proc = System::getInstance()->getProc();
+	assert(p == proc->getRunningTask());
+	proc->setRunning(nullptr);
+	proc->setBusy(false);
+}
+
+void TaskScheduler::scheduleTask(Visited *e, double time)
+{
+	bool preempts = discipline->doesPreempt(e);
 	currentTime = time;
 	Queue *readyQueue = Queue::getReadyQueue();
-	Processor *proc = Processor::getInstance();
+	Processor *proc = System::getInstance()->getProc();
+	
+	printInvocation();
+	
 	if (freqGovernor != nullptr && freqGovernor->freqChangeEvent(trigger))
 	{
 		proc->setFreq(freqGovernor->selectFreq(readyQueue));
 	}
-	if (trigger != wait && trigger != terminate && !discipline->preempts(trigger) && cpuBusy)
+	if (!preempts && proc->isBusy())
 	{
 		return;
 	}
-	printInvocation();
 	
-	updateTemperature();
 
-	if (trigger == terminate || trigger == wait)
-	{
-		proc->setRunning(nullptr);
-	}
 	Process *nextTask = discipline->selectNextTask(readyQueue, proc->getRunningTask());
 	
 	if (proc->isRunning(nextTask) /*&& runningTask != nullptr*/)
 	{
 		return;
 	}
-	if (discipline->preempts(trigger))
+	if (discipline->preempts(trigger)) 
 	{
 		putRunningTaskBackToReadyQueue(proc->getRunningTask());
 	}
@@ -81,7 +88,7 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 	readyQueue->remove(nextTask);
 
 
-	cpuBusy = (nextTask != nullptr);
+	proc->setBusy(nextTask != nullptr);
 	scheduleEndOfBurst(nextTask);
 	printRunningProcess(nextTask);
 	return;
@@ -106,7 +113,7 @@ void TaskScheduler::putRunningTaskBackToReadyQueue(Process *runningTask)
 	Processor *proc = Processor::getInstance();
 	EventList *eventList = EventList::getInstance();
 	Queue *readyQueue = Queue::getReadyQueue();
-	if (!cpuBusy)
+	if (!proc->isBusy())
 		return;
 	Event *ev = getBurstEnd();
 	if (ev != nullptr)
@@ -129,7 +136,7 @@ void TaskScheduler::printInvocation()
 void TaskScheduler::printRunningProcess(Process *runningTask)
 {
 	Log log;
-	if (cpuBusy)
+	if (runningTask != nullptr)
 	{
 		log << Log::Color::blue<<"    Currently running process number "<<runningTask->getPid();
 		
@@ -161,6 +168,11 @@ void TaskScheduler::setDiscipline(SchedulingDiscipline *disc)
 	log << Log::Color::green << "Using scheduling discipline " << disc->getName() << Log::Color::normal << "\n";
 }
 
+
+
+
+
+
 void TaskScheduler::setBurstEnd(Event *e)
 {
 	burstEnd = e;
@@ -178,12 +190,6 @@ void TaskScheduler::setFreqGovernor(FreqGovernor *gov)
 	log << Log::Color::green << "Using frequency governor "<<gov->getName()<< Log::Color::normal <<"\n";
 }
 
-
-
-bool TaskScheduler::isBusy()
-{
-	return cpuBusy;
-}
 
 
 
