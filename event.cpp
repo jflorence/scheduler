@@ -14,6 +14,7 @@
 #include "randomGenerator.h"
 #include "taskScheduler.h"
 
+#include "system.h"
 
 Event::Event(double t, Process *p, bool r)
 {
@@ -186,7 +187,7 @@ void TimeOut::setInterval(double inter)
 
 void UsageUpdate::doWork()
 {
-	Processor::getInstance()->updateUsage(TaskScheduler::getInstance()->isBusy());
+	System::getInstance()->getProc()->updateUsage();
 }
 
 TimeOut* UsageUpdate::getNextTimeout()

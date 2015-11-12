@@ -12,7 +12,7 @@ class SchedulingDiscipline : public Visitor
 {
 public:
 	virtual Process *selectNextTask(Queue *readyQueue, Process *running)=0;
-	virtual bool doesPreempt(Visited *v){return false};
+	bool doesPreempt(Visited *);
 	virtual std::string getName()=0;
 	virtual void visit(Event *e);
 protected:

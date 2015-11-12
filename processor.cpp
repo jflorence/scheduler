@@ -33,7 +33,7 @@ double Processor::getUsage()
 	return usage;
 }
 
-void Processor::updateUsage(bool busy)
+void Processor::updateUsage()
 {/*exponential average. Is that the best average to use?*/
 	usage = (1.0 - alpha)*usage + alpha*(busy?1.0:0.0);
 }

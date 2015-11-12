@@ -17,7 +17,7 @@ public:
 	double getMinFreq();
 	double getMaxFreq();
 	double getUsage();
-	void updateUsage(bool isBusy);
+	void updateUsage();
 	bool isRunning(Process *p);
 	void setRunning(Process *p);
 	Process *getRunningTask();

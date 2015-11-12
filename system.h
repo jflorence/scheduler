@@ -10,7 +10,7 @@ public:
 private:
 	static System *instance;
 public:
-	updateTemperature();
+	void updateTemperature();
 	Processor *getProc();
 private:
 	Processor proc;

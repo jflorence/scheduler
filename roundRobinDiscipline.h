@@ -12,7 +12,7 @@ class RoundRobinDiscipline : public SchedulingDiscipline
 public:
 	RoundRobinDiscipline();
 	Process *selectNextTask(Queue *readyQueue, Process *running);
-	bool preempts(TriggeringEvent trigger);
+	bool visit(SchedTimeOut *v){preempts = true;};
 	std::string getName();
 private:
 	Process *currentProcess{nullptr};
