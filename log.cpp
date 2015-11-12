@@ -19,7 +19,10 @@ void Log::print<>(Log::Color color)
                         break;
                 case Log::Color::normal:
                         outstream << "\033[0m";
-                        break;
+			break;
+		case Log::Color::lightBlue:
+			outstream << "\033[34m";
+			break;
                 default:
                         outstream << "";
                         break;

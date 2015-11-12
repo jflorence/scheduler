@@ -7,7 +7,7 @@
 class Log
 {
 public:
-	enum Color{normal, red, blue, green};
+	enum Color{normal, red, blue, green, lightBlue};
 	template<typename T> void print(T);
 private:
 	std::ostream& outstream = std::cout;

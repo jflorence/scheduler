@@ -19,22 +19,21 @@ private:
 public:
 	void scheduleTask(TriggeringEvent trigger, double currentTime);
 	void setDiscipline(SchedulingDiscipline *discipline);
-	void setTemperatureModel(TemperatureModel *model);
 	void setFreqGovernor(FreqGovernor *gov);
 	bool isBusy();
 	void printReports();
-	void scheduleEndOfBurst();
+	void scheduleEndOfBurst(Process *runningTask);
 private:
 	
 	void updateTemperature();
 	void printStatus();
-	void printRunningProcess();
+	void printRunningProcess(Process *runningTask);
 	void printInvocation();
-	void putRunningTaskBackToReadyQueue();
+	void putRunningTaskBackToReadyQueue(Process *task);
 	
 	SchedulingDiscipline *discipline{nullptr};
-	TemperatureModel *temperatureModel{nullptr};
 	FreqGovernor *freqGovernor{nullptr};
+	
 	Process *runningTask{nullptr};
 	double freq{1};
 	bool cpuBusy{false};
@@ -43,10 +42,6 @@ private:
 	Event *getBurstEnd();
 	double previousTime{0.0};
 	double currentTime{0.0};
-	double energy{0.0};
-	double power{0.0};
-	double capa{1.0};
-	double leakage{1.0};
 	
 };
 

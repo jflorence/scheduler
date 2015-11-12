@@ -32,7 +32,6 @@ TaskScheduler *TaskScheduler::getInstance()
 		//scheduler->setDiscipline(new PriorityDiscipline);
 		//scheduler->setDiscipline(new RmsDiscipline);
 		//scheduler->setDiscipline(new EdfDiscipline);
-		scheduler->setTemperatureModel(new SimpleTemperatureModel);
 		//scheduler->setFreqGovernor(new MinGovernor);
 		scheduler->setFreqGovernor(new ConservativeGovernor);
 	}
@@ -50,10 +49,10 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 {
 	currentTime = time;
 	Queue *readyQueue = Queue::getReadyQueue();
-
+	Processor *proc = Processor::getInstance();
 	if (freqGovernor != nullptr && freqGovernor->freqChangeEvent(trigger))
 	{
-		freq = freqGovernor->selectFreq(readyQueue);
+		proc->setFreq(freqGovernor->selectFreq(readyQueue));
 	}
 	if (trigger != wait && trigger != terminate && !discipline->preempts(trigger) && cpuBusy)
 	{
@@ -65,44 +64,46 @@ void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 
 	if (trigger == terminate || trigger == wait)
 	{
-		runningTask = nullptr;
+		proc->setRunning(nullptr);
 	}
-	Process *nextTask = discipline->selectNextTask(readyQueue, runningTask);
+	Process *nextTask = discipline->selectNextTask(readyQueue, proc->getRunningTask());
 	
-	if (nextTask == runningTask && runningTask != nullptr)
+	if (proc->isRunning(nextTask) /*&& runningTask != nullptr*/)
 	{
 		return;
 	}
 	if (discipline->preempts(trigger))
 	{
-		putRunningTaskBackToReadyQueue();
+		putRunningTaskBackToReadyQueue(proc->getRunningTask());
 	}
 
-	runningTask = nextTask;
+	proc->setRunning(nextTask);
 	readyQueue->remove(nextTask);
 
 
-	cpuBusy = (runningTask != nullptr);
-	scheduleEndOfBurst();
-	printRunningProcess();
+	cpuBusy = (nextTask != nullptr);
+	scheduleEndOfBurst(nextTask);
+	printRunningProcess(nextTask);
 	return;
 }
 
-void TaskScheduler::scheduleEndOfBurst()
+void TaskScheduler::scheduleEndOfBurst(Process *runningTask)
 {
+	Processor *proc = Processor::getInstance();
 	EventList *eventList = EventList::getInstance();
 	if (!cpuBusy)
 		return;
 
-	double newTime = currentTime + runningTask->getCurrentCpuAow()/freq;
+	double newTime = currentTime + runningTask->getCurrentCpuAow()/proc->getFreq();
 	bool wait = runningTask->advanceBurst();
 	Event *e = wait ? (Event*) new Waiting(newTime, runningTask) : (Event*) new Terminates(newTime, runningTask);
 
 	setBurstEnd(eventList->insert(e));
 }
 
-void TaskScheduler::putRunningTaskBackToReadyQueue()
+void TaskScheduler::putRunningTaskBackToReadyQueue(Process *runningTask)
 {
+	Processor *proc = Processor::getInstance();
 	EventList *eventList = EventList::getInstance();
 	Queue *readyQueue = Queue::getReadyQueue();
 	if (!cpuBusy)
@@ -110,7 +111,7 @@ void TaskScheduler::putRunningTaskBackToReadyQueue()
 	Event *ev = getBurstEnd();
 	if (ev != nullptr)
 	{
-		double newAow = (ev->getTime() - currentTime)*freq;
+		double newAow = (ev->getTime() - currentTime)*proc->getFreq();
 		runningTask->updateCurrentAow(newAow);
 		eventList->remove(ev);
 		readyQueue->add(runningTask);
@@ -120,11 +121,12 @@ void TaskScheduler::putRunningTaskBackToReadyQueue()
 
 void TaskScheduler::printInvocation()
 {
-	std::cout << "\033[34m"<< "    Scheduler invoked. Ready queue contains " 
-		<< Queue::getReadyQueue()->getDisplay() << "\033[0m" <<"\n";
+	Log log;
+	log << Log::Color::lightBlue << "    Scheduler invoked. Ready queue contains " 
+		<< Queue::getReadyQueue()->getDisplay() << Log::Color::normal <<"\n";
 }
 
-void TaskScheduler::printRunningProcess()
+void TaskScheduler::printRunningProcess(Process *runningTask)
 {
 	Log log;
 	if (cpuBusy)
@@ -144,13 +146,9 @@ void TaskScheduler::printRunningProcess()
 
 void TaskScheduler::updateTemperature()
 {
-	double runningInterval = currentTime - previousTime;
-	energy += power*runningInterval;
+	double timeInterval = currentTime - previousTime;
 	previousTime = currentTime;
-	double powerCoeff = (runningTask==nullptr) ? 0.0: runningTask->powerCoeff;
-	power = freq*freq*freq*capa*powerCoeff + leakage;
-
-	temperatureModel->updateTemperature(runningInterval, power);
+	Processor::getInstance()->updateTemperature(timeInterval);
 }
 
 
@@ -163,10 +161,6 @@ void TaskScheduler::setDiscipline(SchedulingDiscipline *disc)
 	log << Log::Color::green << "Using scheduling discipline " << disc->getName() << Log::Color::normal << "\n";
 }
 
-void TaskScheduler::setTemperatureModel(TemperatureModel *model)
-{
-	temperatureModel = model;
-}
 void TaskScheduler::setBurstEnd(Event *e)
 {
 	burstEnd = e;
@@ -195,16 +189,7 @@ bool TaskScheduler::isBusy()
 
 void TaskScheduler::printReports()
 {
-	std::ofstream file;
-	file.open("reports.txt", std::ios_base::app);
-	std::vector<std::pair<double, double>> tempHist = temperatureModel->getTemperatureHistory();
-	file << "temperature report:\n";
-	for (unsigned int i = 0; i < tempHist.size(); i++)
-	{
-		file << tempHist[i].first << ": " << tempHist[i].second << "\n";	
-	}
-	file << "\n";
-	file.close();
+	Processor::getInstance()->printTemperatureReport();
 }
 
 
