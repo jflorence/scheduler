@@ -7,7 +7,7 @@ class MaxGovernor : public FreqGovernor
 {
 public:
 	MaxGovernor();
-	double selectFreq(Queue *readyQueue);
+	void updateFreq(Processor *proc, Queue *readyQueue);
 	bool freqChangeEvent(TriggeringEvent trigger);
 	std::string getName();
 private:

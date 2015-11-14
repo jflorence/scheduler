@@ -11,6 +11,7 @@
 #include "eventList.h"
 #include "eventType.h"
 #include "fcfsDiscipline.h"
+#include "fixedPriorityDiscipline.h"
 #include "log.h"
 #include "maxGovernor.h"
 #include "minGovernor.h"
@@ -29,8 +30,8 @@ TaskScheduler *TaskScheduler::getInstance()
 	{
 		scheduler = new TaskScheduler();
 		//scheduler->setDiscipline(new FcfsDiscipline);
-		scheduler->setDiscipline(new RoundRobinDiscipline);
-		//scheduler->setDiscipline(new PriorityDiscipline);
+		//scheduler->setDiscipline(new RoundRobinDiscipline);
+		scheduler->setDiscipline(new FixedPriorityDiscipline);
 		//scheduler->setDiscipline(new RmsDiscipline);
 		//scheduler->setDiscipline(new EdfDiscipline);
 		//scheduler->setFreqGovernor(new MinGovernor);
@@ -39,24 +40,9 @@ TaskScheduler *TaskScheduler::getInstance()
 	return scheduler;
 }
 
-void TaskScheduler::printStatus()
-{
-	EventList::getInstance()->print();
-	Queue::getReadyQueue()->print();
-	Queue::getWaitQueue()->print();
-}
 
-void clearRunningTask(Process *p)
+void TaskScheduler::scheduleTask(TriggeringEvent trigger, double time)
 {
-	Processor *proc = System::getInstance()->getProc();
-	assert(p == proc->getRunningTask());
-	proc->setRunning(nullptr);
-	proc->setBusy(false);
-}
-
-void TaskScheduler::scheduleTask(Visited *e, double time)
-{
-	bool preempts = discipline->doesPreempt(e);
 	currentTime = time;
 	Queue *readyQueue = Queue::getReadyQueue();
 	Processor *proc = System::getInstance()->getProc();
@@ -64,29 +50,20 @@ void TaskScheduler::scheduleTask(Visited *e, double time)
 	printInvocation();
 	
 	if (freqGovernor != nullptr && freqGovernor->freqChangeEvent(trigger))
-	{
-		proc->setFreq(freqGovernor->selectFreq(readyQueue));
-	}
-	if (!preempts && proc->isBusy())
-	{
+		freqGovernor->updateFreq(proc, readyQueue);
+	if (!discipline->preempts(trigger) && proc->isBusy())
 		return;
-	}
 	
 
 	Process *nextTask = discipline->selectNextTask(readyQueue, proc->getRunningTask());
 	
-	if (proc->isRunning(nextTask) /*&& runningTask != nullptr*/)
-	{
+	if (proc->isRunning(nextTask))
 		return;
-	}
 	if (discipline->preempts(trigger)) 
-	{
 		putRunningTaskBackToReadyQueue(proc->getRunningTask());
-	}
 
 	proc->setRunning(nextTask);
 	readyQueue->remove(nextTask);
-
 
 	proc->setBusy(nextTask != nullptr);
 	scheduleEndOfBurst(nextTask);
@@ -94,11 +71,27 @@ void TaskScheduler::scheduleTask(Visited *e, double time)
 	return;
 }
 
+
+void TaskScheduler::printStatus()
+{
+	EventList::getInstance()->print();
+	Queue::getReadyQueue()->print();
+	Queue::getWaitQueue()->print();
+}
+
+void TaskScheduler::clearRunningTask(Process *p)
+{
+	Processor *proc = System::getInstance()->getProc();
+	assert(p == proc->getRunningTask());
+	proc->setRunning(nullptr);
+	proc->setBusy(false);
+}
+
 void TaskScheduler::scheduleEndOfBurst(Process *runningTask)
 {
-	Processor *proc = Processor::getInstance();
+	Processor *proc = System::getInstance()->getProc();
 	EventList *eventList = EventList::getInstance();
-	if (!cpuBusy)
+	if (!proc->isBusy())
 		return;
 
 	double newTime = currentTime + runningTask->getCurrentCpuAow()/proc->getFreq();
@@ -110,7 +103,7 @@ void TaskScheduler::scheduleEndOfBurst(Process *runningTask)
 
 void TaskScheduler::putRunningTaskBackToReadyQueue(Process *runningTask)
 {
-	Processor *proc = Processor::getInstance();
+	Processor *proc = System::getInstance()->getProc();
 	EventList *eventList = EventList::getInstance();
 	Queue *readyQueue = Queue::getReadyQueue();
 	if (!proc->isBusy())
@@ -155,7 +148,7 @@ void TaskScheduler::updateTemperature()
 {
 	double timeInterval = currentTime - previousTime;
 	previousTime = currentTime;
-	Processor::getInstance()->updateTemperature(timeInterval);
+	System::getInstance()->updateTemperature(timeInterval);
 }
 
 
@@ -195,7 +188,7 @@ void TaskScheduler::setFreqGovernor(FreqGovernor *gov)
 
 void TaskScheduler::printReports()
 {
-	Processor::getInstance()->printTemperatureReport();
+	System::getInstance()->printTemperatureReport();
 }
 
 

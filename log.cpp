@@ -5,7 +5,10 @@
 template<>
 void Log::print<>(Log::Color color)
 {
+
 #ifdef __linux__
+	if (outstream != std::cout)
+		return;
         switch (color)
         {
                 case Log::Color::red:

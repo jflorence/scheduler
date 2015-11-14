@@ -9,13 +9,12 @@ class ConservativeGovernor : public FreqGovernor
 {
 public:
 	ConservativeGovernor();
-	double selectFreq(Queue *readyQueue);
+	void updateFreq(Processor *proc, Queue *readyQueue);
 	bool freqChangeEvent(TriggeringEvent trigger);
 	std::string getName();
 private:
 	const double maxFreq;
 	const double minFreq;
-	double currentFreq;
 
 	const double samplingRate{10}; /*FIXME This is pretty much useless here for the moment*/
 	const double upThreshold{0.95};

@@ -19,5 +19,7 @@ std::string FcfsDiscipline::getName()
 	return "FCFS";
 }
 
-
-
+bool FcfsDiscipline::preempts(TriggeringEvent /*trigger*/)
+{
+	return false;
+}

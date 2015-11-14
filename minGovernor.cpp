@@ -1,13 +1,13 @@
 #include "minGovernor.h"
 #include "queue.h"
-
-MinGovernor::MinGovernor() : minFreq(Processor::getInstance()->getMinFreq())
+#include "system.h"
+MinGovernor::MinGovernor() : minFreq(System::getInstance()->getProc()->getMinFreq())
 {
 }
 
-double MinGovernor::selectFreq(Queue * /*readyQueue*/)
+void MinGovernor::updateFreq(Processor *proc, Queue * /*readyQueue*/)
 {
-	return minFreq;
+	proc->setFreq(minFreq);
 }
 
 bool MinGovernor::freqChangeEvent(TriggeringEvent /*trigger*/)

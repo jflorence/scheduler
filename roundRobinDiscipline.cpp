@@ -28,3 +28,12 @@ std::string RoundRobinDiscipline::getName()
 	return "Round Robin";
 }
 
+
+bool RoundRobinDiscipline::preempts(TriggeringEvent trigger)
+{
+	return trigger == schedTimeOut;
+}
+
+
+
+

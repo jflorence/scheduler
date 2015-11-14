@@ -5,11 +5,12 @@
 #include "processor.h"
 
 class Queue;
+class Processor;
 
 class FreqGovernor
 {
 public:
-	virtual double selectFreq(Queue *readyQueue)=0;
+	virtual void updateFreq(Processor *proc, Queue *readyQueue)=0;
 	virtual bool freqChangeEvent(TriggeringEvent trigger)=0;
 	virtual std::string getName()=0;
 };

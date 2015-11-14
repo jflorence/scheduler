@@ -3,14 +3,12 @@
 
 #include "eventType.h"
 #include <string>
-#include "visited.h"
-#include "visitor.h"
 
 class Process;
 class EventList;
 class Visitor;
 
-class Event : public Visited
+class Event
 {
 
 public:
@@ -20,7 +18,6 @@ public:
 	virtual ~Event();
 	void print();
 	virtual std::string getName()=0;
-	virtual void accept(Visitor *visitor){visitor->visit(this);};
 protected:
 	double time;
 	bool renew;
@@ -37,7 +34,6 @@ public:
 	virtual ~NewProcess();
 	virtual void process()=0;
 	virtual std::string getName()=0;
-	virtual void accept(Visitor *visitor){visitor->visit(this);};
 protected:
 	void queueProcess(Process *p);
 	virtual void scheduleNextEvent()=0;
@@ -50,7 +46,6 @@ public:
 	NewInteractiveProcess(double time, Process *task=nullptr, bool renew=true) : NewProcess(time, task, renew){};
 	void process() override;
 	std::string getName() override;
-	virtual void accept(Visitor *visitor){visitor->visit(this);};
 private:
 	double lambda;
 	Process *createTask() override;
@@ -63,7 +58,6 @@ public:
 	NewJob(double time, Process *task=nullptr, bool renew=true) : NewProcess(time, task, renew){};
 	void process() override;
 	std::string getName() override;
-	virtual void accept(Visitor *visitor){visitor->visit(this);};
 private:
 	Process *createTask() override;
 	void scheduleNextEvent() override;
@@ -73,16 +67,22 @@ private:
 class TimeOut : public Event
 {
 public:
-	TimeOut(double time, Process *task=nullptr, bool renew=true) : Event(time, task, renew){eventType=timeout;};
+	TimeOut(double time, Process *task=nullptr, bool renew=true) : Event(time, task, renew){};
 	void process() override;
 	virtual void doWork();
-	virtual TimeOut *getNextTimeout();
+	virtual TimeOut *getNextTimeout()=0;
 	double getInterval();
 	void setInterval(double inter);
-	virtual std::string getName() override;
-	virtual void accept(Visitor *visitor){visitor->visit(this);};
 protected:
 	double interval{2};
+};
+
+class SchedTimeOut : public TimeOut
+{
+public:
+	SchedTimeOut(double time, Process *task=nullptr, bool renew=true) : TimeOut(time, task, renew){eventType=schedTimeOut;};
+	TimeOut *getNextTimeout();
+	std::string getName();
 };
 
 class UsageUpdate : public TimeOut
@@ -92,7 +92,6 @@ public:
 	std::string getName() override;
 	void doWork() override;
 	TimeOut *getNextTimeout() override;
-	virtual void accept(Visitor *visitor){visitor->visit(this);};
 protected:
 };
 
@@ -103,7 +102,6 @@ public:
 	std::string getName();
 	TimeOut *getNextTimeout() override;
 	void doWork() override;
-	virtual void accept(Visitor *visitor){visitor->visit(this);};
 };
 
 class Ready : public Event
@@ -112,7 +110,6 @@ public:
 	Ready(double time, Process *task=nullptr, bool renew=false) : Event(time, task, renew){eventType=ready;};
 	void process() override;
 	std::string getName() override;
-	virtual void accept(Visitor *visitor){visitor->visit(this);};
 };
 
 class Waiting : public Event
@@ -121,7 +118,6 @@ public:
 	Waiting(double time, Process *task=nullptr, bool renew=false) : Event(time, task, renew){eventType=wait;};
 	void process() override;
 	std::string getName() override;
-	virtual void accept(Visitor *visitor){visitor->visit(this);};
 };
 
 class Terminates : public Event
@@ -130,7 +126,6 @@ public:
 	Terminates(double time, Process *task=nullptr, bool renew=false) : Event(time, task, renew){eventType=terminate;};
 	void process() override;
 	std::string getName() override;
-	virtual void accept(Visitor *visitor){visitor->visit(this);};
 };
 
 class StopSimulation : public Event
@@ -139,7 +134,6 @@ public:
 	StopSimulation(double time, Process *task=nullptr, bool renew=false) : Event(time, task, renew){eventType=stop;};
 	void process() override;
 	std::string getName() override;
-	virtual void accept(Visitor *visitor){visitor->visit(this);};
 };
 
 

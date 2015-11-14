@@ -10,10 +10,11 @@ public:
 private:
 	static System *instance;
 public:
-	void updateTemperature();
+	void updateTemperature(double timeInterval);
 	Processor *getProc();
+	void printTemperatureReport();
 private:
-	Processor proc;
+	Processor *proc;
 };
 
 

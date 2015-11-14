@@ -9,5 +9,6 @@ class FcfsDiscipline : public SchedulingDiscipline
 public:
 	Process *selectNextTask(Queue *readyQueue, Process *running) override;
 	std::string getName();
+	bool preempts(TriggeringEvent trigger);
 };
 #endif

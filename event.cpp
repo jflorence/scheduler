@@ -164,16 +164,16 @@ void TimeOut::doWork()
 	TaskScheduler::getInstance()->scheduleTask(eventType, time);
 }
 
-TimeOut *TimeOut::getNextTimeout()
-{
-	return new TimeOut(time+interval);
-}
 
-std::string TimeOut::getName()
+std::string SchedTimeOut::getName()
 {
 	return "Timeout";
 }
 
+TimeOut *SchedTimeOut::getNextTimeout()
+{
+	return new SchedTimeOut(time+interval);
+}
 
 double TimeOut::getInterval()
 {

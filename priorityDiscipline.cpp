@@ -25,13 +25,9 @@ Process *PriorityDiscipline::selectNextTask(Queue *readyQueue, Process *running)
 
 bool PriorityDiscipline::preempts(TriggeringEvent trigger)
 {
-	return (trigger == newprocess);
+	return (trigger == newprocess || trigger == ready);
 }
 
-std::string PriorityDiscipline::getName()
-{
-	return "Priority discipline";
-}
 
 void PriorityDiscipline::updatePriorities(Queue * readyQueue, Process * running)
 {

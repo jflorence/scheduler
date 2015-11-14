@@ -1,14 +1,14 @@
 #include "maxGovernor.h"
 #include "queue.h"
 #include "processor.h"
-
-MaxGovernor::MaxGovernor() : maxFreq(Processor::getInstance()->getMaxFreq())
+#include "system.h"
+MaxGovernor::MaxGovernor() : maxFreq(System::getInstance()->getProc()->getMaxFreq())
 {
 }
 
-double MaxGovernor::selectFreq(Queue * /*readyQueue*/)
+void MaxGovernor::updateFreq(Processor *proc, Queue * /*readyQueue*/)
 {
-	return maxFreq;
+	proc->setFreq(maxFreq);
 }
 
 bool MaxGovernor::freqChangeEvent(TriggeringEvent /*trigger*/)

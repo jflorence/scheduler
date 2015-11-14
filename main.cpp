@@ -10,14 +10,14 @@ int main()
 	
 	SchedulingSimulator simulator;
 
-	simulator.seedRandomGenerator(time(NULL));
+	simulator.seedRandomGenerator(123);
 	
 	/*
 	simulator.createRealTimeTask(0.0, 35.0, 25.0, 10.0);
 	simulator.createRealTimeTask(0.0, 25.0, 6.0, 6.0);
 	simulator.createRealTimeTask(0.0, 15.0, 15.0, 7.0);
 	*/
-	simulator.createRealTimeTask(0.0, 15.0, 15.0, 7.0);
+	//simulator.createRealTimeTask(0.0, 15.0, 15.0, 7.0);
 	simulator.createInteractiveProcess(1.0);
 	simulator.createInteractiveProcess(1.0);
 	simulator.createInteractiveProcess(1.0);

@@ -1,22 +1,10 @@
 #include "processor.h"
 #include "process.h"
-#include "simpleTemperatureModel.h"
+#include "temperatureModel.h"
 #include <iostream>
 #include <fstream>
 
 
-Processor *Processor::proc = nullptr;
-
-
-Processor *Processor::getInstance()
-{
-	if (proc == nullptr)
-	{
-		proc = new Processor;
-		proc->setTemperatureModel(new SimpleTemperatureModel);
-	}
-	return proc;
-}
 
 double Processor::getMaxFreq()
 {

@@ -1,16 +1,4 @@
-TODO: make the accept() in Event pure virtual
 
-Actually, we can make accept virtual in event,
-visit virtual in all non-leaf disciplines, and have a visit(Event) defined in every leaf
-
-TODO: The BIGISSUE could be maybe solved with the acyclic visitor pattern. However, this brings us back to the original solution, only in much more complicated. It is therefore not a solution.
-Also look at partial visitation
-
-TODO: classes with virtual functions need a virtual destructor
-TODO: "A class with any of {destructor, copy assignment operator, copy constructor, move assignment operator, move constructor} generally needs all 5" https://isocpp.org/wiki/faq/coding-standards
-
-TODO: move the scheduling timeout in its own derived class
-TODO: Same for fixed priority
 
 FIXME: find the right alpha for usage calculation
 FIXME: find some realistic value for the temp coeffs

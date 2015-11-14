@@ -5,6 +5,7 @@
 #include "event.h"
 #include "eventList.h"
 #include "randomGenerator.h"
+#include "system.h"
 
 void SchedulingSimulator::createRealTimeTask(double startTime, double period, double deadline, double aow)
 {
@@ -48,7 +49,7 @@ void SchedulingSimulator::setFreqUpdate(double start, double interval)
 
 void SchedulingSimulator::setSchedulerTimeout(double start, double interval)
 {
-        TimeOut *timeout = new TimeOut(start);
+        SchedTimeOut *timeout = new SchedTimeOut(start);
         timeout->setInterval(interval);
         EventList::getInstance()->insert(timeout);
 }

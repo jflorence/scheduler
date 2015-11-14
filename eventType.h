@@ -1,6 +1,6 @@
 #ifndef EVENTTYPE_H
 #define EVENTTYPE_H
 
-enum TriggeringEvent {terminate, wait, ready, newprocess, timeout, freqUpdate, usageUpdate, stop, nothing};
+enum TriggeringEvent {terminate, wait, ready, newprocess, schedTimeOut, freqUpdate, usageUpdate, stop, nothing};
 
 #endif

@@ -3,20 +3,16 @@
 
 #include "eventType.h"
 #include <string>
-#include "visitor.h"
 
 class Process;
 class Queue;
 
-class SchedulingDiscipline : public Visitor
+class SchedulingDiscipline
 {
 public:
 	virtual Process *selectNextTask(Queue *readyQueue, Process *running)=0;
-	bool doesPreempt(Visited *);
+	virtual bool preempts(TriggeringEvent trigger)=0;
 	virtual std::string getName()=0;
-	virtual void visit(Event *e);
-protected:
-	bool preempts{false};
 };
 
 #endif

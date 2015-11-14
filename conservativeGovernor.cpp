@@ -1,16 +1,16 @@
 #include "conservativeGovernor.h"
 #include "processor.h"
 #include <algorithm>
+#include "system.h"
 ConservativeGovernor::ConservativeGovernor() : 
-	maxFreq(Processor::getInstance()->getMaxFreq()), minFreq(Processor::getInstance()->getMinFreq())
+	maxFreq(System::getInstance()->getProc()->getMaxFreq()), minFreq(System::getInstance()->getProc()->getMinFreq())
 {
-	currentFreq = minFreq;
 }
 
-double ConservativeGovernor::selectFreq(Queue * /*readyQueue*/)
+void ConservativeGovernor::updateFreq(Processor *proc, Queue * /*readyQueue*/)
 {
 	/*TODO not finished*/
-	Processor *proc = Processor::getInstance();
+	double currentFreq = proc->getFreq();
 	if (proc->getUsage() > upThreshold)
 	{
 		currentFreq = std::min(maxFreq, currentFreq + freqStep*maxFreq);
@@ -19,7 +19,7 @@ double ConservativeGovernor::selectFreq(Queue * /*readyQueue*/)
 	{
 		currentFreq = std::max(minFreq, currentFreq - freqStep*maxFreq);
 	}
-	return currentFreq;
+	proc->setFreq(currentFreq);
 }
 
 bool ConservativeGovernor::freqChangeEvent(TriggeringEvent trigger)

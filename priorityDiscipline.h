@@ -8,8 +8,8 @@ class PriorityDiscipline : public SchedulingDiscipline
 public:
 	typedef bool (*ComparatorPointer)(Process *, Process *);
 	Process *selectNextTask(Queue *readyQueue, Process *running);
-	virtual bool doesPreempt(Visited *v);
-	virtual std::string getName();
+	virtual bool preempts(TriggeringEvent trigger);
+	virtual std::string getName()=0;
 protected:
 	virtual void updatePriorities(Queue *readyQueue, Process *running);
 	virtual  ComparatorPointer getComparator();
