@@ -1,7 +1,7 @@
 CC = g++
 CPPFLAGS = -g -W -Wall -std=c++11
 LDFLAGS = 
-OBJ = main.o event.o eventList.o process.o queue.o randomGenerator.o taskScheduler.o fcfsDiscipline.o roundRobinDiscipline.o simpleTemperatureModel.o maxGovernor.o minGovernor.o conservativeGovernor.o processor.o priorityDiscipline.o rmsDiscipline.o schedulingSimulator.o edfDiscipline.o log.o system.o fixedPriorityDiscipline.o
+OBJ = main.o event.o eventList.o process.o queue.o randomGenerator.o taskScheduler.o fcfsDiscipline.o roundRobinDiscipline.o simpleTemperatureModel.o maxGovernor.o minGovernor.o conservativeGovernor.o processor.o priorityDiscipline.o rmsDiscipline.o schedulingSimulator.o edfDiscipline.o log.o system.o fixedPriorityDiscipline.o mdpGovernor.o mdp.o
 
 all: scheduler
 
@@ -29,6 +29,10 @@ edfDiscipline.o: edfDiscipline.cpp log.h
 log.o: log.cpp log.h
 system.o: system.cpp log.h
 fixedPriorityDiscipline.o: fixedPriorityDiscipline.cpp log.h
+mdpGovernor.o: mdpGovernor.cpp log.h
+mdp.o: mdp.cpp log.h
+
+
 
 
 clean:
