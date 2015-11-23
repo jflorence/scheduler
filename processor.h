@@ -27,7 +27,7 @@ public:
 	bool isBusy();
 	void setBusy(bool busy);
 private:
-	const double maxFreq{2.0};
+	const double maxFreq{10.0};
 	const double minFreq{1.0};
 	double usage{0.0};
 	/*FIXME I have no clue about what is a good alpha value.

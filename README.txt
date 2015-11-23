@@ -1,4 +1,8 @@
 
+TODO: implement MDP scheduling
+
+
+TODO: the processor's setBusy function should be able to be used when a process is running, in order to pause it
 
 FIXME: find the right alpha for usage calculation
 FIXME: find some realistic value for the temp coeffs
@@ -11,4 +15,3 @@ It would add a dependency of Event on SchedulingDiscipline. Also, SchedulingDisc
 but also we need as many visit() methods as there are event types (or at least types for wich the behavior differs from the default).
 And this needs to be done for evey discipline.
 
-TODO: implement MDP scheduling
