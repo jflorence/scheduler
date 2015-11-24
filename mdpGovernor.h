@@ -3,6 +3,10 @@
 
 #include "freqGovernor.h"
 #include "mdp.h"
+#include "mdpStateStrategy.h"
+
+
+
 
 class MdpGovernor : public FreqGovernor
 {
@@ -12,7 +16,7 @@ public:
 	virtual std::string getName();
 private:
 	Mdp mdp;
-	MdpState getState(Processor *proc, Queue *readyQueue);
+	MdpStateStrategy *stateStrategy;
 };
 
 

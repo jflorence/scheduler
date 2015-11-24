@@ -25,9 +25,11 @@ public:
 	bool isEmpty();
 	void print();
 	std::string getDisplay();
+	int getMaxSize();
 private:
 	std::list<Process *> queue;
 	std::string queueDisplay;
+	const int maxSize{20};
 };
 
 

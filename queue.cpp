@@ -103,7 +103,10 @@ std::string Queue::getDisplay()
 
 
 
-
+int Queue::getMaxSize()
+{
+	return maxSize;
+}
 
 
 

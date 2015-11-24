@@ -7,7 +7,6 @@
 
 
 
-typedef int MdpState;
 typedef enum MdpAction{minFreq, maxFreq, off} MdpAction;
 
 
