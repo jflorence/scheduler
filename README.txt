@@ -1,3 +1,4 @@
+TODO: overload the [] operator on the policy class
 
 TODO: implement MDP scheduling
 
