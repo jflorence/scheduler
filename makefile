@@ -1,7 +1,7 @@
 CC = g++
 CPPFLAGS = -g -W -Wall -std=c++11
 LDFLAGS = 
-OBJ = main.o event.o eventList.o process.o queue.o randomGenerator.o taskScheduler.o fcfsDiscipline.o roundRobinDiscipline.o simpleTemperatureModel.o maxGovernor.o minGovernor.o conservativeGovernor.o processor.o priorityDiscipline.o rmsDiscipline.o schedulingSimulator.o edfDiscipline.o log.o system.o fixedPriorityDiscipline.o mdpGovernor.o mdp.o
+OBJ = main.o event.o eventList.o process.o queue.o randomGenerator.o taskScheduler.o fcfsDiscipline.o roundRobinDiscipline.o simpleTemperatureModel.o maxGovernor.o minGovernor.o conservativeGovernor.o processor.o priorityDiscipline.o rmsDiscipline.o schedulingSimulator.o edfDiscipline.o log.o system.o fixedPriorityDiscipline.o mdpGovernor.o mdpStateSpace.o mdpTransitionMatrix.o mdpPolicy.o mdpRewards.o mdpAction.o mdpStateSpaceDimension.o
 
 all: scheduler
 
@@ -30,10 +30,12 @@ log.o: log.cpp log.h
 system.o: system.cpp log.h
 fixedPriorityDiscipline.o: fixedPriorityDiscipline.cpp log.h
 mdpGovernor.o: mdpGovernor.cpp log.h
-mdp.o: mdp.cpp log.h
-
-
-
+mdpStateSpace.o: mdpStateSpace.cpp log.h
+mdpPolicy.o: mdpPolicy.cpp log.h
+mdpRewards.o: mdpRewards.cpp log.h
+mdpTransitionMatrix.o: mdpTransitionMatrix.cpp log.h
+mdpAction.o: mdpAction.cpp log.h
+mdpStateSpaceDimension.o: mdpStateSpaceDimension.cpp log.h
 
 clean:
 	rm -f ./scheduler

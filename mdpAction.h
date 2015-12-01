@@ -8,10 +8,12 @@
 class MdpAction
 {
 public:
-	static int idCounter{0};
+	static int idCounter;
 public:
+	MdpAction();
 	MdpAction(std::string);
 	std::string getName();
+	int getId();
 private:
 	std::string name;
 	int id;
@@ -26,7 +28,7 @@ private:
 public:
 	int size();
 private:
-	vector<MdpAction> actions;
+	std::vector<MdpAction> actions;
 };
 
 

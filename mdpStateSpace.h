@@ -1,12 +1,17 @@
 #ifndef MDPSTATESPACE_H
 #define MDPSTATESPACE_H
 
+#include <vector>
+#include "mdpStateSpaceDimension.h"
+#include "mdpAction.h"
+
 class Queue;
 class Processor;
 class MdpPolicy;
 class MdpTransitionMatrix;
 class MdpRewards;
-typedef std::pair<int, int> MdpState;
+typedef int MdpState;
+typedef std::vector<int> MdpStateInternal;
 
 
 
@@ -17,20 +22,27 @@ class MdpStateSpace
 {
 	friend class MdpStateSpaceBuilder;
 public:
-	MdpStateSpace(int nbOfStates);
 
 	void updateRewards(double currentReward);
 	MdpAction selectAction(Processor *proc, Queue *readyQueue, Queue *waitQueue, double reward);
-	void setPolicy(Policy *p);
-	void setTransitionMatrix(TransitionMatrix *m);
-	void setRewards(Rewards *r);
+	~MdpStateSpace();
 
 private:
-	MdpState getState(Processor *proc, Queue *readyQueue, Queue *waitQueue);
-	Policy *policy;
-	TransitionMatrix *matrix;
-	Rewards *rewards;
+	/*state space has to be constructed with the builder*/
+	MdpStateSpace(int nbOfStates, std::vector<MdpStateSpaceDimension *> dimensions);
+	void setPolicy(MdpPolicy *p);
+	void setTransitionMatrix(MdpTransitionMatrix *m);
+	void setRewards(MdpRewards *r);
+	MdpState getState(Processor *proc, Queue *readyQueue, Queue *waitQueue); /*TODO Is this actually needed ?*/
+	MdpStateInternal getStateInternal(Processor *proc, Queue *readyQueue, Queue *waitQueue);
+	MdpState convertState(MdpStateInternal);
+
+	MdpPolicy *policy;
+	MdpTransitionMatrix *matrix;
+	MdpRewards *rewards;
 	int nbOfStates;
+	std::vector<MdpStateSpaceDimension *> dimensions;
+	MdpStateInternal currentState;
 };
 
 
@@ -40,25 +52,9 @@ class MdpStateSpaceBuilder
 {
 public:
 	MdpStateSpace *getStateSpace();
-	void addReadyQueueSize();
-	void addWaitQueueSize();
-	void addFrequency();
-	void addTemperature();
-	void addMissRate();
+	void addDimension(MdpStateSpaceDimension *dimension);
 private:
-	bool withReadyQueue{false};
-	bool withWaitQueue{false};
-	bool withFrequency{false};
-	bool withTemperature{false};
-	bool withMissRate{false};
-
-
-	int readyQueueIndex;
-	int waitQueueIndex;
-	int frequencyIndex;
-	int temperatureIndex;
-	int missRateIndex;
-
+	std::vector<MdpStateSpaceDimension *> dimensions;
 
 
 	int nbOfStates{1};

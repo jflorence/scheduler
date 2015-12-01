@@ -1,18 +1,51 @@
 #include "mdpStateSpace.h"
+
+#include <cassert>
 #include "mdpPolicy.h"
 #include "mdpTransitionMatrix.h"
 #include "mdpRewards.h"
+#include "mdpAction.h"
+#include "processor.h"
+#include "queue.h"
 
-MdpStateSpace::MdpStateSpace(int N) : nbOfStates(N) {}
+
+MdpStateSpace::MdpStateSpace(int N, std::vector<MdpStateSpaceDimension *> dims) :
+	nbOfStates(N),
+	dimensions(dims)
+{}
+
+MdpStateSpace::~MdpStateSpace()
+{
+	for (unsigned int i = 0; i < dimensions.size(); i++)
+	{
+		delete dimensions[i];
+	}
+}
+
+MdpStateInternal MdpStateSpace::getStateInternal(Processor *proc, Queue *readyQueue, Queue *waitQueue)
+{
+/*FIXME TODO*/
+	MdpStateInternal state = std::vector<int>(dimensions.size());
+	for (unsigned int i = 0; i < dimensions.size(); i++)
+	{
+		MdpStateSpaceDimension *dim = dimensions[i];
+		state[dim->getIndex()] = dim->getPosition();
+	}
+	return state;
+}
 
 
 
 MdpState MdpStateSpace::getState(Processor *proc, Queue *readyQueue, Queue *waitQueue)
 {
-/*FIXME TODO*/
-	MdpState state;
-	return state;
+	currentState = getStateInternal(proc, readyQueue, waitQueue);
+	
+	return convertState(currentState);
 }
+
+
+
+
 
 void MdpStateSpace::updateRewards(double currentReward)
 {
@@ -23,29 +56,38 @@ void MdpStateSpace::updateRewards(double currentReward)
 
 MdpAction MdpStateSpace::selectAction(Processor *proc, Queue *readyQueue, Queue *waitQueue, double reward)
 {
-	MdpAction action;
+	/*FIXME TODO*/
+	MdpAction action("default");
 	return action;
 }
 
 
 
-void MdpStateSpace::setPolicy(Policy *p)
+void MdpStateSpace::setPolicy(MdpPolicy *p)
 {
 	policy = p;
 }
 
-void MdpStateSpace::setTransitionMatrix(TransitionMatrix *m)
+void MdpStateSpace::setTransitionMatrix(MdpTransitionMatrix *m)
 {
 	matrix = m;
 }
 
-void MdpStateSpace::setRewards(Rewards *r)
+void MdpStateSpace::setRewards(MdpRewards *r)
 {
 	rewards = r;
 }
 
-
-
+MdpState MdpStateSpace::convertState(MdpStateInternal iState)
+{
+	int state = 0;
+	for (unsigned int i = 0; i < dimensions.size(); i++)
+	{
+		state += iState[dimensions[i]->getIndex()]; /*I think the index should be the same as i ?*/
+		state *= dimensions[i]->getNumberOfPositions();
+	}
+	return state;
+}
 
 
 
@@ -60,64 +102,22 @@ void MdpStateSpace::setRewards(Rewards *r)
 
 MdpStateSpace *MdpStateSpaceBuilder::getStateSpace()
 {
-	MdpStateSpace *statespace = new MdpStateSpace();
-	int nbOfActions = MdpActionState::getActionState()->size();
-	MdpPolicy *policy = new MdpPolicy(nbOfStates);
-	MdpTransitionMatrix matrix = new MdpTransitionMatrix(nbOfStates, nbOfActions);
-	MdpRewards rewards = new MdpRewards(nbOfStates, nbOfActions);
+	MdpStateSpace *stateSpace = new MdpStateSpace(nbOfStates, dimensions);
+	int nbOfActions = MdpActionSpace::getActionSpace()->size();
+	stateSpace->setPolicy(new MdpPolicy(nbOfStates));
+	stateSpace->setTransitionMatrix(new MdpTransitionMatrix(nbOfStates, nbOfActions));
+	stateSpace->setRewards(new MdpRewards(nbOfStates, nbOfActions));
 	return stateSpace;
 }
 
-
-void MdpStateSpaceBuilder::addReadyQueue()
+void MdpStateSpaceBuilder::addDimension(MdpStateSpaceDimension *dim)
 {
-	nbOfStates *= Queue::getReadyQueue()->getMaxSize();
-	readyQueueIndex = nbOfDimensions;
-	nbOfDimensions++;
-	withReadyQueue = true;
+	/*TODO: check that this dimension was not added twice*/
+	dim->setIndex(nbOfDimensions++);
+	nbOfStates *= dim->getNumberOfPositions();
+	assert(nbOfStates > 0); //getNumberOfPositions returns -1 if not defined
+	dimensions.push_back(dim);
 }
-
-void MdpStateSpaceBuilder::addWaitQueue()
-{
-	nbOfStates *= Queue::getWaitQueue()->getMaxSize();
-	waitQueueIndex = nbOfDimensions;
-	nbofDimensions++;
-	withWaitQueue++;
-}
-
-void MdpStateSpaceBuilder::withFrequency()
-{
-	nbOfStates *= 2; /*TODO how many states for the freq ??*/
-	frequencyIndex = nbOfDimensions;
-	nbOfDimensions++;
-	withWaitQueue = true;
-}
-
-void MdpStateSpaceBuilder::withTemperature()
-{
-	nbOfStates *= 2; /*TODO how many states for the temp??*/
-	temperatureIndex = nbOfDimensions;
-	nbOfDimensions++;
-	withTemperature = true;
-}
-
-void MdpStateSpaceBuilder::withMissRate()
-{
-	nbOfStates *= 2; /*TODO: how many states for the miss rate?*/
-	missRateIndex = nbOfDimensions;
-	nbOfDimensions++;
-	withMissRate = true;
-}
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -1,17 +1,35 @@
 #include "mdpGovernor.h"
+#include "mdpStateSpace.h"
+#include "mdpAction.h"
 
 #include "processor.h"
 #include "queue.h"
 
-
-
-void MdpGovernor::updateFreq(Processor *Proc, Queue *readyQueue)
+MdpGovernor::MdpGovernor()
 {
-	MdpState state = getState(proc, readyQueue);
-	MdpAction action = mdp.getAction(state);
+	MdpStateSpaceBuilder builder;
+	builder.addDimension(new MdpReadyQueueDimension);
+	//builder.addDimension(new MdpWaitQueueDimension);
+	//builder.addDimension(new MdpTemperatureDimension);
+	//builder.addDimension(new MdpFrequencyDimension);
+	//builder.addDimension(new MdpMissRateDimension);
+	stateSpace = builder.getStateSpace();
+}
+
+MdpGovernor::~MdpGovernor()
+{
+	delete stateSpace;
+}
+
+void MdpGovernor::updateFreq(Processor *proc, Queue *readyQueue)
+{
+	Queue *waitQueue = Queue::getWaitQueue(); /*FIXME ugly*/
+	MdpAction action = stateSpace->selectAction(proc, readyQueue, waitQueue, 0.0);
+	/*
 	double freq = 1.0;
 	switch (action)
 	{
+	
 	case MdpAcion::minFreq:
 		proc->setFreq(proc->getMinFreq());
 		break;
@@ -23,11 +41,12 @@ void MdpGovernor::updateFreq(Processor *Proc, Queue *readyQueue)
 	default:
 		break;
 	}
-
+	*/
+	
 }
 
 
-bool freqChangeEvent(TriggeringEvent trigger)
+bool MdpGovernor::freqChangeEvent(TriggeringEvent trigger)
 {
 	if (trigger == ready || trigger == newprocess || trigger == freqUpdate)
 		return true;
@@ -43,10 +62,6 @@ std::string MdpGovernor::getName()
 
 
 
-MdpState MdpGovernor::getState(Processor *proc, Queue *readyQueue)
-{
-	return 0; /*FIXME*/
-}
 
 
 
