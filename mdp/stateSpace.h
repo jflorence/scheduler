@@ -2,9 +2,9 @@
 #define MDPSTATESPACE_H
 
 #include <vector>
-#include "mdpStateSpaceDimension.h"
-#include "mdpAction.h"
-#include "mdpState.h"
+#include "stateSpaceDimension.h"
+#include "action.h"
+#include "state.h"
 class Queue;
 class Processor;
 class MdpPolicy;

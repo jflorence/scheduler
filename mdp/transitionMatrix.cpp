@@ -1,5 +1,5 @@
-#include "mdpTransitionMatrix.h"
-#include "randomGenerator.h"
+#include "transitionMatrix.h"
+#include "../randomGenerator.h"
 
 MdpTransitionMatrix::MdpTransitionMatrix(int S, int A) :
 	matrix(new double[S*S*A]), nbOfStates(S), nbOfActions(A)

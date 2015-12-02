@@ -1,5 +1,5 @@
-#include "mdpStateSpaceDimension.h"
-#include "queue.h"
+#include "stateSpaceDimension.h"
+#include "../queue.h"
 
 void MdpStateSpaceDimension::setIndex(int i)
 {
@@ -24,12 +24,12 @@ std::string MdpReadyQueueDimension::getName()
 
 int MdpReadyQueueDimension::getPosition()
 {
-	return Queue::getReadyQueue()->getMaxSize();
+	return -1;
 }
 
 int MdpReadyQueueDimension::getNumberOfPositions()
 {
-	return -1;
+	return Queue::getReadyQueue()->getMaxSize()+1;
 }
 
 
@@ -50,7 +50,7 @@ int MdpWaitQueueDimension::getPosition()
 
 int MdpWaitQueueDimension::getNumberOfPositions()
 {
-	return Queue::getWaitQueue()->getMaxSize();
+	return Queue::getWaitQueue()->getMaxSize()+1;
 }
 
 

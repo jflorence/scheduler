@@ -2,8 +2,8 @@
 #define MDPPOLICY_H
 
 #include <vector>
-#include "mdpAction.h"
-#include "mdpState.h"
+#include "action.h"
+#include "state.h"
 
 class MdpPolicy
 {

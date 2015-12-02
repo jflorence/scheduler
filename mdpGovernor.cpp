@@ -1,6 +1,5 @@
 #include "mdpGovernor.h"
-#include "mdpStateSpace.h"
-#include "mdpAction.h"
+#include "mdp/action.h"
 
 #include "processor.h"
 #include "queue.h"

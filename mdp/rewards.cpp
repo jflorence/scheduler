@@ -1,4 +1,4 @@
-#include "mdpRewards.h"
+#include "rewards.h"
 
 MdpRewards::MdpRewards(int S, int A) :
 	nbOfStates(S),

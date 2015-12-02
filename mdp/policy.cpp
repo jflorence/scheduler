@@ -1,5 +1,5 @@
-#include "mdpPolicy.h"
-#include "randomGenerator.h"
+#include "policy.h"
+#include "../randomGenerator.h"
 
 MdpPolicy::MdpPolicy(int nbOfStates) :
 	policy(std::vector<std::vector<double>>(nbOfStates, std::vector<double>(nbOfActions)))

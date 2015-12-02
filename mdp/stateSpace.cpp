@@ -1,12 +1,10 @@
-#include "mdpStateSpace.h"
+#include "stateSpace.h"
 
 #include <cassert>
-#include "mdpPolicy.h"
-#include "mdpTransitionMatrix.h"
-#include "mdpRewards.h"
-#include "mdpAction.h"
-#include "processor.h"
-#include "queue.h"
+#include "policy.h"
+#include "transitionMatrix.h"
+#include "rewards.h"
+#include "action.h"
 
 
 MdpStateSpace::MdpStateSpace(int N, std::vector<MdpStateSpaceDimension *> dims) :

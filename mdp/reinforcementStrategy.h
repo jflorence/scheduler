@@ -1,7 +1,7 @@
 #ifndef REINFORCEMENTSTRATEGY_H
 #define REINFORCEMENTSTRATEGY_H
 
-#include "mdpPolicyStrategy.h"
+#include "learningStrategy.h"
 
 class ReinforcementStrategy : public MdpLearningStrategy
 {

@@ -2,8 +2,8 @@
 #define MDPTRANSITIONMATRIX_H
 
 #include <vector>
-#include "mdpState.h"
-#include "mdpAction.h"
+#include "state.h"
+#include "action.h"
 
 
 
