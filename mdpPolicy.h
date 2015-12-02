@@ -1,20 +1,20 @@
 #ifndef MDPPOLICY_H
 #define MDPPOLICY_H
 
-#include <unordered_map>
-#include <tuple>
+#include <vector>
 #include "mdpAction.h"
-#include "mdpStateSpace.h"
+#include "mdpState.h"
 
 class MdpPolicy
 {
 public:
 	MdpPolicy(int nbOfStates);
-	void set(std::unordered_map<MdpState, MdpAction> p);
-	void update(MdpState state, MdpAction action);
+	void update(MdpState state, std::vector<double> vector);
 	MdpAction getAction(MdpState state);
+	std::vector<double> getActionVector(MdpState state);
+	void initializeRandomly();
 private:
-	std::unordered_map<MdpState, MdpAction> policy;
+	std::vector<std::vector<double>> policy;
 	int nbOfStates;
 	int nbOfActions;
 };

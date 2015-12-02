@@ -1,3 +1,7 @@
+TODO: put the mdp stuff in its own folder and namespace
+
+TODO: solve the generator mess
+
 TODO: overload the [] operator on the policy class
 
 TODO: implement MDP scheduling

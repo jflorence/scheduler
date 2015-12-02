@@ -4,13 +4,12 @@
 #include <vector>
 #include "mdpStateSpaceDimension.h"
 #include "mdpAction.h"
-
+#include "mdpState.h"
 class Queue;
 class Processor;
 class MdpPolicy;
 class MdpTransitionMatrix;
 class MdpRewards;
-typedef int MdpState;
 typedef std::vector<int> MdpStateInternal;
 
 

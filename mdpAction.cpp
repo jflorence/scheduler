@@ -1,24 +1,5 @@
 #include "mdpAction.h"
-
-int MdpAction::idCounter = 0;
-
-MdpAction::MdpAction(std::string str)
-{
-	name = str;
-	id = idCounter++;
-}
-
-MdpAction::MdpAction()
-{
-	name = "noName";
-	id = idCounter++;
-}
-
-int MdpAction::getId()
-{
-	return id;
-}
-
+#include <cassert>
 
 
 MdpActionSpace *MdpActionSpace::space = nullptr;
@@ -28,19 +9,28 @@ MdpActionSpace *MdpActionSpace::getActionSpace()
         if (space == nullptr)
         {
                 space = new MdpActionSpace();
-                space->actions.push_back(MdpAction("increaseFreq"));
-                space->actions.push_back(MdpAction("decreaseFreq"));
         }
         return space;
 }
 
+MdpActionSpace::MdpActionSpace()
+{
+	actions = std::vector<std::string>(MdpAction::nbOfActions);
+	actions[decreaseFreq] = "decreaseFreq";
+	actions[increaseFreq] = "increaseFreq";
 
+}
 
 int MdpActionSpace::size()
 {
+	assert(MdpAction::nbOfActions == actions.size());
 	return actions.size();
 }
 
 
 
 
+std::string MdpActionSpace::getActionName(MdpAction action)
+{
+	return actions[action];
+}

@@ -57,8 +57,7 @@ void MdpStateSpace::updateRewards(double currentReward)
 MdpAction MdpStateSpace::selectAction(Processor *proc, Queue *readyQueue, Queue *waitQueue, double reward)
 {
 	/*FIXME TODO*/
-	MdpAction action("default");
-	return action;
+	return MdpAction::nbOfActions;
 }
 
 

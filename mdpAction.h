@@ -1,35 +1,30 @@
 #ifndef MDPACTION_H
 #define MDPACTION_H
 
-#include <vector>
 #include <string>
+#include <tuple>
+#include <vector>
 
-
-class MdpAction
-{
-public:
-	static int idCounter;
-public:
-	MdpAction();
-	MdpAction(std::string);
-	std::string getName();
-	int getId();
-private:
-	std::string name;
-	int id;
-};
 
 class MdpActionSpace
 {
 public:
+	enum MdpAction
+	{
+		decreaseFreq, increaseFreq, nbOfActions
+	};
 	static MdpActionSpace *getActionSpace();
 private:
 	static MdpActionSpace *space;
 public:
 	int size();
+	std::string getActionName(MdpAction);
 private:
-	std::vector<MdpAction> actions;
+	MdpActionSpace();
+	std::vector<std::string> actions;
 };
+
+typedef enum MdpActionSpace::MdpAction MdpAction;
 
 
 #endif
