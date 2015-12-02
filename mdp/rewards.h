@@ -5,12 +5,17 @@
 
 #include "action.h"
 #include "state.h"
-class MdpRewards
+
+namespace Mdp
+{
+
+
+class Rewards
 {
 public:
-	MdpRewards(int nbOfStates, int nbOfActions);	
-	double getReward(MdpState, MdpAction);
-	void setReward(MdpState state, MdpAction action, double reward);
+	Rewards(int nbOfStates, int nbOfActions);	
+	double getReward(State, Action);
+	void setReward(State state, Action action, double reward);
 
 private:
 	int nbOfStates;
@@ -18,5 +23,5 @@ private:
 	std::vector<std::vector<double>> rewards;
 };
 
-
+}
 #endif

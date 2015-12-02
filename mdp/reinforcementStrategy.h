@@ -3,10 +3,14 @@
 
 #include "learningStrategy.h"
 
-class ReinforcementStrategy : public MdpLearningStrategy
+namespace Mdp
+{
+class ReinforcementStrategy : public LearningStrategy
 {
 public:
 	void update(Policy *policy, TransitionMatrix *mat, Rewards *rewards);
 };
 
+
+}
 #endif

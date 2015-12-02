@@ -3,10 +3,17 @@
 
 #include <string>
 
-class MdpStateSpaceDimension
+
+
+namespace Mdp
+{
+
+
+
+class StateSpaceDimension
 {
 public:
-	virtual ~MdpStateSpaceDimension(){};
+	virtual ~StateSpaceDimension(){};
 	virtual std::string getName()=0;
 	virtual int getPosition()=0; /*Gets the current state of the system in that particular dimension*/
 	virtual int getNumberOfPositions()=0;
@@ -20,51 +27,51 @@ private:
 
 
 
-class MdpReadyQueueDimension : public MdpStateSpaceDimension
+class ReadyQueueDimension : public StateSpaceDimension
 {
 public:
-	~MdpReadyQueueDimension(){};
+	~ReadyQueueDimension(){};
 	std::string getName();
 	int getPosition();
 	int getNumberOfPositions();
 };
 
-class MdpWaitQueueDimension : public MdpStateSpaceDimension
+class WaitQueueDimension : public StateSpaceDimension
 {
 public:
-	~MdpWaitQueueDimension(){}
+	~WaitQueueDimension(){}
 	std::string getName();
 	int getPosition();
 	int getNumberOfPositions();
 };
 
-class MdpFrequencyDimension : public MdpStateSpaceDimension
+class FrequencyDimension : public StateSpaceDimension
 {
 public:
-	~MdpFrequencyDimension(){};
+	~FrequencyDimension(){};
 	std::string getName();
 	int getPosition();
 	int getNumberOfPositions();
 };
 
-class MdpTemperatureDimension : public MdpStateSpaceDimension
+class TemperatureDimension : public StateSpaceDimension
 {
 public:
-	~MdpTemperatureDimension(){};
+	~TemperatureDimension(){};
 	std::string getName();
 	int getPosition();
 	int getNumberOfPositions();
 };
 
-class MdpMissRateDimension : public MdpStateSpaceDimension
+class MissRateDimension : public StateSpaceDimension
 {
 public:
-	~MdpMissRateDimension(){};
+	~MissRateDimension(){};
 	std::string getName();
 	int getPosition();
 	int getNumberOfPositions();
 };
 
 
-
+}
 #endif

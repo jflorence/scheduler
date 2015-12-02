@@ -1,36 +1,37 @@
 #include "action.h"
 #include <cassert>
 
+using namespace Mdp;
 
-MdpActionSpace *MdpActionSpace::space = nullptr;
+ActionSpace *ActionSpace::space = nullptr;
 
-MdpActionSpace *MdpActionSpace::getActionSpace()
+ActionSpace *ActionSpace::getActionSpace()
 {
         if (space == nullptr)
         {
-                space = new MdpActionSpace();
+                space = new ActionSpace();
         }
         return space;
 }
 
-MdpActionSpace::MdpActionSpace()
+ActionSpace::ActionSpace()
 {
-	actions = std::vector<std::string>(MdpAction::nbOfActions);
+	actions = std::vector<std::string>(Action::nbOfActions);
 	actions[decreaseFreq] = "decreaseFreq";
 	actions[increaseFreq] = "increaseFreq";
 
 }
 
-int MdpActionSpace::size()
+int ActionSpace::size()
 {
-	assert(MdpAction::nbOfActions == actions.size());
+	assert(Action::nbOfActions == actions.size());
 	return actions.size();
 }
 
 
 
 
-std::string MdpActionSpace::getActionName(MdpAction action)
+std::string ActionSpace::getActionName(Action action)
 {
 	return actions[action];
 }

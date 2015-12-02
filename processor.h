@@ -5,6 +5,7 @@
 
 class Process;
 class TemperatureModel;
+
 class Processor
 {
 public:

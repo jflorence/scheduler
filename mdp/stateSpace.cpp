@@ -7,12 +7,15 @@
 #include "action.h"
 
 
-MdpStateSpace::MdpStateSpace(int N, std::vector<MdpStateSpaceDimension *> dims) :
+using namespace Mdp;
+
+
+StateSpace::StateSpace(int N, std::vector<StateSpaceDimension *> dims) :
 	nbOfStates(N),
 	dimensions(dims)
 {}
 
-MdpStateSpace::~MdpStateSpace()
+StateSpace::~StateSpace()
 {
 	for (unsigned int i = 0; i < dimensions.size(); i++)
 	{
@@ -20,13 +23,13 @@ MdpStateSpace::~MdpStateSpace()
 	}
 }
 
-MdpStateInternal MdpStateSpace::getStateInternal(Processor *proc, Queue *readyQueue, Queue *waitQueue)
+StateInternal StateSpace::getStateInternal(Processor *proc, Queue *readyQueue, Queue *waitQueue)
 {
 /*FIXME TODO*/
-	MdpStateInternal state = std::vector<int>(dimensions.size());
+	StateInternal state = std::vector<int>(dimensions.size());
 	for (unsigned int i = 0; i < dimensions.size(); i++)
 	{
-		MdpStateSpaceDimension *dim = dimensions[i];
+		StateSpaceDimension *dim = dimensions[i];
 		state[dim->getIndex()] = dim->getPosition();
 	}
 	return state;
@@ -34,7 +37,7 @@ MdpStateInternal MdpStateSpace::getStateInternal(Processor *proc, Queue *readyQu
 
 
 
-MdpState MdpStateSpace::getState(Processor *proc, Queue *readyQueue, Queue *waitQueue)
+State StateSpace::getState(Processor *proc, Queue *readyQueue, Queue *waitQueue)
 {
 	currentState = getStateInternal(proc, readyQueue, waitQueue);
 	
@@ -45,37 +48,37 @@ MdpState MdpStateSpace::getState(Processor *proc, Queue *readyQueue, Queue *wait
 
 
 
-void MdpStateSpace::updateRewards(double currentReward)
+void StateSpace::updateRewards(double currentReward)
 {
 /*FIXME TODO*/
 	return;
 }
 
 
-MdpAction MdpStateSpace::selectAction(Processor *proc, Queue *readyQueue, Queue *waitQueue, double reward)
+Action StateSpace::selectAction(Processor *proc, Queue *readyQueue, Queue *waitQueue, double reward)
 {
 	/*FIXME TODO*/
-	return MdpAction::nbOfActions;
+	return Action::nbOfActions;
 }
 
 
 
-void MdpStateSpace::setPolicy(MdpPolicy *p)
+void StateSpace::setPolicy(Policy *p)
 {
 	policy = p;
 }
 
-void MdpStateSpace::setTransitionMatrix(MdpTransitionMatrix *m)
+void StateSpace::setTransitionMatrix(TransitionMatrix *m)
 {
 	matrix = m;
 }
 
-void MdpStateSpace::setRewards(MdpRewards *r)
+void StateSpace::setRewards(Rewards *r)
 {
 	rewards = r;
 }
 
-MdpState MdpStateSpace::convertState(MdpStateInternal iState)
+State StateSpace::convertState(StateInternal iState)
 {
 	int state = 0;
 	for (unsigned int i = 0; i < dimensions.size(); i++)
@@ -97,17 +100,17 @@ MdpState MdpStateSpace::convertState(MdpStateInternal iState)
 
 
 
-MdpStateSpace *MdpStateSpaceBuilder::getStateSpace()
+StateSpace *StateSpaceBuilder::getStateSpace()
 {
-	MdpStateSpace *stateSpace = new MdpStateSpace(nbOfStates, dimensions);
-	int nbOfActions = MdpActionSpace::getActionSpace()->size();
-	stateSpace->setPolicy(new MdpPolicy(nbOfStates));
-	stateSpace->setTransitionMatrix(new MdpTransitionMatrix(nbOfStates, nbOfActions));
-	stateSpace->setRewards(new MdpRewards(nbOfStates, nbOfActions));
+	StateSpace *stateSpace = new StateSpace(nbOfStates, dimensions);
+	int nbOfActions = ActionSpace::getActionSpace()->size();
+	stateSpace->setPolicy(new Policy(nbOfStates));
+	stateSpace->setTransitionMatrix(new TransitionMatrix(nbOfStates, nbOfActions));
+	stateSpace->setRewards(new Rewards(nbOfStates, nbOfActions));
 	return stateSpace;
 }
 
-void MdpStateSpaceBuilder::addDimension(MdpStateSpaceDimension *dim)
+void StateSpaceBuilder::addDimension(StateSpaceDimension *dim)
 {
 	/*TODO: check that this dimension was not added twice*/
 	dim->setIndex(nbOfDimensions++);

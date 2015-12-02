@@ -4,27 +4,28 @@
 #include <string>
 #include <tuple>
 #include <vector>
+namespace Mdp
+{
 
-
-class MdpActionSpace
+class ActionSpace
 {
 public:
-	enum MdpAction
+	enum Action
 	{
 		decreaseFreq, increaseFreq, nbOfActions
 	};
-	static MdpActionSpace *getActionSpace();
+	static ActionSpace *getActionSpace();
 private:
-	static MdpActionSpace *space;
+	static ActionSpace *space;
 public:
 	int size();
-	std::string getActionName(MdpAction);
+	std::string getActionName(Action);
 private:
-	MdpActionSpace();
+	ActionSpace();
 	std::vector<std::string> actions;
 };
 
-typedef enum MdpActionSpace::MdpAction MdpAction;
+typedef enum ActionSpace::Action Action;
 
-
+}
 #endif

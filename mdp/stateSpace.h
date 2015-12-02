@@ -7,53 +7,57 @@
 #include "state.h"
 class Queue;
 class Processor;
-class MdpPolicy;
-class MdpTransitionMatrix;
-class MdpRewards;
-typedef std::vector<int> MdpStateInternal;
 
 
-
-
-
-
-class MdpStateSpace
+namespace Mdp
 {
-	friend class MdpStateSpaceBuilder;
+
+class Policy;
+class TransitionMatrix;
+class Rewards;
+
+
+typedef std::vector<int> StateInternal;
+
+
+
+class StateSpace
+{
+	friend class StateSpaceBuilder;
 public:
 
 	void updateRewards(double currentReward);
-	MdpAction selectAction(Processor *proc, Queue *readyQueue, Queue *waitQueue, double reward);
-	~MdpStateSpace();
+	Action selectAction(Processor *proc, Queue *readyQueue, Queue *waitQueue, double reward);
+	~StateSpace();
 
 private:
 	/*state space has to be constructed with the builder*/
-	MdpStateSpace(int nbOfStates, std::vector<MdpStateSpaceDimension *> dimensions);
-	void setPolicy(MdpPolicy *p);
-	void setTransitionMatrix(MdpTransitionMatrix *m);
-	void setRewards(MdpRewards *r);
-	MdpState getState(Processor *proc, Queue *readyQueue, Queue *waitQueue); /*TODO Is this actually needed ?*/
-	MdpStateInternal getStateInternal(Processor *proc, Queue *readyQueue, Queue *waitQueue);
-	MdpState convertState(MdpStateInternal);
+	StateSpace(int nbOfStates, std::vector<StateSpaceDimension *> dimensions);
+	void setPolicy(Policy *p);
+	void setTransitionMatrix(TransitionMatrix *m);
+	void setRewards(Rewards *r);
+	State getState(Processor *proc, Queue *readyQueue, Queue *waitQueue); /*TODO Is this actually needed ?*/
+	StateInternal getStateInternal(Processor *proc, Queue *readyQueue, Queue *waitQueue);
+	State convertState(StateInternal);
 
-	MdpPolicy *policy;
-	MdpTransitionMatrix *matrix;
-	MdpRewards *rewards;
+	Policy *policy;
+	TransitionMatrix *matrix;
+	Rewards *rewards;
 	int nbOfStates;
-	std::vector<MdpStateSpaceDimension *> dimensions;
-	MdpStateInternal currentState;
+	std::vector<StateSpaceDimension *> dimensions;
+	StateInternal currentState;
 };
 
 
 
 
-class MdpStateSpaceBuilder
+class StateSpaceBuilder
 {
 public:
-	MdpStateSpace *getStateSpace();
-	void addDimension(MdpStateSpaceDimension *dimension);
+	StateSpace *getStateSpace();
+	void addDimension(StateSpaceDimension *dimension);
 private:
-	std::vector<MdpStateSpaceDimension *> dimensions;
+	std::vector<StateSpaceDimension *> dimensions;
 
 
 	int nbOfStates{1};
@@ -61,7 +65,7 @@ private:
 };
 
 
-
+}
 
 
 

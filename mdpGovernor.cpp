@@ -6,8 +6,8 @@
 
 MdpGovernor::MdpGovernor()
 {
-	MdpStateSpaceBuilder builder;
-	builder.addDimension(new MdpReadyQueueDimension);
+	Mdp::StateSpaceBuilder builder;
+	builder.addDimension(new Mdp::ReadyQueueDimension);
 	//builder.addDimension(new MdpWaitQueueDimension);
 	//builder.addDimension(new MdpTemperatureDimension);
 	//builder.addDimension(new MdpFrequencyDimension);
@@ -23,7 +23,7 @@ MdpGovernor::~MdpGovernor()
 void MdpGovernor::updateFreq(Processor *proc, Queue *readyQueue)
 {
 	Queue *waitQueue = Queue::getWaitQueue(); /*FIXME ugly*/
-	MdpAction action = stateSpace->selectAction(proc, readyQueue, waitQueue, 0.0);
+	Mdp::Action action = stateSpace->selectAction(proc, readyQueue, waitQueue, 0.0);
 	/*
 	double freq = 1.0;
 	switch (action)

@@ -5,20 +5,24 @@
 #include "state.h"
 #include "action.h"
 
+namespace Mdp
+{
 
-
-class MdpTransitionMatrix
+class TransitionMatrix
 {
 public:
-	MdpTransitionMatrix(int nbOfStates, int nbOfActions);
-	~MdpTransitionMatrix();
-	void set(MdpState from, MdpState to, MdpAction action, double proba);
-	double get(MdpState from, MdpState to, MdpAction action);
+	TransitionMatrix(int nbOfStates, int nbOfActions);
+	~TransitionMatrix();
+	void set(State from, State to, Action action, double proba);
+	double get(State from, State to, Action action);
 	void initializeRandomly();
 private:
 	double *matrix{nullptr};
 	int nbOfStates;
 	int nbOfActions;
 };
+
+
+}
 
 #endif

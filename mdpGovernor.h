@@ -16,7 +16,7 @@ public:
 	virtual bool freqChangeEvent(TriggeringEvent trigger);
 	virtual std::string getName();
 private:
-	MdpStateSpace *stateSpace;
+	Mdp::StateSpace *stateSpace;
 	/*TODO keep track of the MdpAction history*/
 };
 

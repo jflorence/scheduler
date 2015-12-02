@@ -1,12 +1,16 @@
 #include "stateSpaceDimension.h"
 #include "../queue.h"
+#include "../processor.h"
+#include "../system.h"
+using namespace Mdp;
 
-void MdpStateSpaceDimension::setIndex(int i)
+
+void StateSpaceDimension::setIndex(int i)
 {
 	index = i;
 }
 
-int MdpStateSpaceDimension::getIndex()
+int StateSpaceDimension::getIndex()
 {
 	return index;
 }
@@ -17,17 +21,17 @@ int MdpStateSpaceDimension::getIndex()
 
 
 
-std::string MdpReadyQueueDimension::getName()
+std::string ReadyQueueDimension::getName()
 {
 	return "Ready queue dimension";
 }
 
-int MdpReadyQueueDimension::getPosition()
+int ReadyQueueDimension::getPosition()
 {
-	return -1;
+	return Queue::getReadyQueue()->size();
 }
 
-int MdpReadyQueueDimension::getNumberOfPositions()
+int ReadyQueueDimension::getNumberOfPositions()
 {
 	return Queue::getReadyQueue()->getMaxSize()+1;
 }
@@ -38,17 +42,17 @@ int MdpReadyQueueDimension::getNumberOfPositions()
 
 
 
-std::string MdpWaitQueueDimension::getName()
+std::string WaitQueueDimension::getName()
 {
 	return  "Wait queue dimension";	
 }
 
-int MdpWaitQueueDimension::getPosition()
+int WaitQueueDimension::getPosition()
 {
-	return -1;
+	return Queue::getWaitQueue()->size();
 }
 
-int MdpWaitQueueDimension::getNumberOfPositions()
+int WaitQueueDimension::getNumberOfPositions()
 {
 	return Queue::getWaitQueue()->getMaxSize()+1;
 }
@@ -61,17 +65,26 @@ int MdpWaitQueueDimension::getNumberOfPositions()
 
 
 
-std::string MdpFrequencyDimension::getName()
+std::string FrequencyDimension::getName()
 {
 	return "Frequency dimension";
 }
 
-int MdpFrequencyDimension::getPosition()
+int FrequencyDimension::getPosition()
 {
-	return -1;
+	int pos;
+	if (System::getInstance()->getProc()->getMinFreq() == System::getInstance()->getProc()->getFreq())
+	{
+		pos = 0;
+	}
+	else
+	{
+		pos = 1;
+	}
+	return pos;
 }
 
-int MdpFrequencyDimension::getNumberOfPositions()
+int FrequencyDimension::getNumberOfPositions()
 {
 	return 2;
 }
@@ -83,17 +96,17 @@ int MdpFrequencyDimension::getNumberOfPositions()
 
 
 
-std::string MdpTemperatureDimension::getName()
+std::string TemperatureDimension::getName()
 {
 	return "Temperature dimension";
 }
 
-int MdpTemperatureDimension::getPosition()
+int TemperatureDimension::getPosition()
 {
 	return -1;
 }
 
-int MdpTemperatureDimension::getNumberOfPositions()
+int TemperatureDimension::getNumberOfPositions()
 {
 	return 2;
 }
@@ -102,21 +115,20 @@ int MdpTemperatureDimension::getNumberOfPositions()
 
 
 
-std::string MdpMissRateDimension::getName()
+std::string MissRateDimension::getName()
 {
 	return "Miss rate dimension";
 }
 
-int MdpMissRateDimension::getPosition()
+int MissRateDimension::getPosition()
 {
 	return -1;
 }
 
-int MdpMissRateDimension::getNumberOfPositions()
+int MissRateDimension::getNumberOfPositions()
 {
 	return -1;
 }
-
 
 
 

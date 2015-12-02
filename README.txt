@@ -1,4 +1,4 @@
-TODO: put the mdp stuff in its own folder and namespace
+TODO: what to do in case of "full" ready/wait queue?
 
 TODO: solve the generator mess
 

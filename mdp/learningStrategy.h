@@ -2,17 +2,19 @@
 #define MDPLEARNINGSTRATEGY_H
 
 
-class Policy;
-class TransitionMatrix;
-class Rewards;
+class Mdp::Policy;
+class Mdp::TransitionMatrix;
+class Mdp::Rewards;
 
+namespace Mdp
+{
 
-class MdpLearningStrategy
+class LearningStrategy
 {
 public:
 	virtual void update(Policy *policy, TransitionMatrix *mat, Rewards *rewards)=0;
 };
 
 
-
+}
 #endif

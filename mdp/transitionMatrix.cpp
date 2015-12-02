@@ -1,31 +1,36 @@
 #include "transitionMatrix.h"
 #include "../randomGenerator.h"
 
-MdpTransitionMatrix::MdpTransitionMatrix(int S, int A) :
+
+
+using namespace Mdp;
+
+
+TransitionMatrix::TransitionMatrix(int S, int A) :
 	matrix(new double[S*S*A]), nbOfStates(S), nbOfActions(A)
 {
 	initializeRandomly();
 }
 
-MdpTransitionMatrix::~MdpTransitionMatrix()
+TransitionMatrix::~TransitionMatrix()
 {
 	delete[] matrix;
 }
 
 
 
-double MdpTransitionMatrix::get(MdpState from, MdpState to, MdpAction action)
+double TransitionMatrix::get(State from, State to, Action action)
 {
 	return matrix[from*nbOfStates*nbOfActions + action*nbOfStates + to];
 }
 
-void MdpTransitionMatrix::set(MdpState from, MdpState to, MdpAction action, double proba)
+void TransitionMatrix::set(State from, State to, Action action, double proba)
 {
 	matrix[from*nbOfStates*nbOfActions + action*nbOfStates + to] = proba;
 }
 
 
-void MdpTransitionMatrix::initializeRandomly()
+void TransitionMatrix::initializeRandomly()
 {
 	RandomGenerator *generator = RandomGenerator::getRandomGenerator();
 	for (int i = 0; i < nbOfStates; i++)
@@ -35,7 +40,7 @@ void MdpTransitionMatrix::initializeRandomly()
 			std::vector<double> vector = generator->drawDistribution(nbOfStates);
 			for (int k = 0; k < nbOfStates; k++)
 			{
-				set(i, k, (MdpAction) j, vector[k]);
+				set(i, k, (Action) j, vector[k]);
 			}
 		}
 	}

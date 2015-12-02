@@ -1,17 +1,21 @@
 #ifndef MDPPOLICY_H
 #define MDPPOLICY_H
 
+
 #include <vector>
 #include "action.h"
 #include "state.h"
 
-class MdpPolicy
+namespace Mdp
+{
+
+class Policy
 {
 public:
-	MdpPolicy(int nbOfStates);
-	void update(MdpState state, std::vector<double> vector);
-	MdpAction getAction(MdpState state);
-	std::vector<double> getActionVector(MdpState state);
+	Policy(int nbOfStates);
+	void update(State state, std::vector<double> vector);
+	Action getAction(State state);
+	std::vector<double> getActionVector(State state);
 	void initializeRandomly();
 private:
 	std::vector<std::vector<double>> policy;
@@ -19,4 +23,7 @@ private:
 	int nbOfActions;
 };
 
+
+
+}
 #endif
