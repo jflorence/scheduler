@@ -12,16 +12,16 @@ class ActionSpace
 public:
 	enum Action
 	{
-		decreaseFreq, increaseFreq, nbOfActions
+		minFreq, maxFreq, nbOfActions
 	};
 	static ActionSpace *getActionSpace();
 private:
 	static ActionSpace *space;
 public:
+	ActionSpace();
 	int size();
 	std::string getActionName(Action);
 private:
-	ActionSpace();
 	std::vector<std::string> actions;
 };
 

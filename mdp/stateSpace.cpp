@@ -1,7 +1,5 @@
 #include "stateSpace.h"
 
-#include <cassert>
-#include "policy.h"
 #include "transitionMatrix.h"
 #include "rewards.h"
 #include "action.h"
@@ -23,7 +21,7 @@ StateSpace::~StateSpace()
 	}
 }
 
-StateInternal StateSpace::getStateInternal(Processor *proc, Queue *readyQueue, Queue *waitQueue)
+StateInternal StateSpace::getStateInternal()
 {
 /*FIXME TODO*/
 	StateInternal state = std::vector<int>(dimensions.size());
@@ -35,47 +33,11 @@ StateInternal StateSpace::getStateInternal(Processor *proc, Queue *readyQueue, Q
 	return state;
 }
 
-
-
-State StateSpace::getState(Processor *proc, Queue *readyQueue, Queue *waitQueue)
+State StateSpace::getState()
 {
-	currentState = getStateInternal(proc, readyQueue, waitQueue);
+	currentState = getStateInternal();
 	
 	return convertState(currentState);
-}
-
-
-
-
-
-void StateSpace::updateRewards(double currentReward)
-{
-/*FIXME TODO*/
-	return;
-}
-
-
-Action StateSpace::selectAction(Processor *proc, Queue *readyQueue, Queue *waitQueue, double reward)
-{
-	/*FIXME TODO*/
-	return Action::nbOfActions;
-}
-
-
-
-void StateSpace::setPolicy(Policy *p)
-{
-	policy = p;
-}
-
-void StateSpace::setTransitionMatrix(TransitionMatrix *m)
-{
-	matrix = m;
-}
-
-void StateSpace::setRewards(Rewards *r)
-{
-	rewards = r;
 }
 
 State StateSpace::convertState(StateInternal iState)
@@ -92,49 +54,8 @@ State StateSpace::convertState(StateInternal iState)
 
 
 
-
-
-
-
-
-
-
-
-StateSpace *StateSpaceBuilder::getStateSpace()
+int StateSpace::getNbOfStates()
 {
-	StateSpace *stateSpace = new StateSpace(nbOfStates, dimensions);
-	int nbOfActions = ActionSpace::getActionSpace()->size();
-	stateSpace->setPolicy(new Policy(nbOfStates));
-	stateSpace->setTransitionMatrix(new TransitionMatrix(nbOfStates, nbOfActions));
-	stateSpace->setRewards(new Rewards(nbOfStates, nbOfActions));
-	return stateSpace;
+	return nbOfStates;
 }
-
-void StateSpaceBuilder::addDimension(StateSpaceDimension *dim)
-{
-	/*TODO: check that this dimension was not added twice*/
-	dim->setIndex(nbOfDimensions++);
-	nbOfStates *= dim->getNumberOfPositions();
-	assert(nbOfStates > 0); //getNumberOfPositions returns -1 if not defined
-	dimensions.push_back(dim);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

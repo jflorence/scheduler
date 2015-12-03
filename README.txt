@@ -1,14 +1,20 @@
+TODO singletons should have a private class
+
+TODO allow mdp to print status
+
+TODO: modify makefile so that changes to .h rebuilds the .cpp
+
 TODO: what to do in case of "full" ready/wait queue?
 
 TODO: solve the generator mess
 
-TODO: overload the [] operator on the policy class
 
 TODO: implement MDP scheduling
-
+TODO: Use a configuration file to select governor, policy, discipline, etc
 
 TODO: the processor's setBusy function should be able to be used when a process is running, in order to pause it
 
+TODO: overload the [] operator on the policy class
 FIXME: find the right alpha for usage calculation
 FIXME: find some realistic value for the temp coeffs
 

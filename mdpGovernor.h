@@ -2,9 +2,9 @@
 #define MDPGOVERNOR_H
 
 #include "freqGovernor.h"
-#include "mdp/stateSpace.h"
+#include "mdp/mdpModel.h"
 
-
+class MdpModel;
 
 
 class MdpGovernor : public FreqGovernor
@@ -16,7 +16,7 @@ public:
 	virtual bool freqChangeEvent(TriggeringEvent trigger);
 	virtual std::string getName();
 private:
-	Mdp::StateSpace *stateSpace;
+	Mdp::MdpModel *model;
 	/*TODO keep track of the MdpAction history*/
 };
 

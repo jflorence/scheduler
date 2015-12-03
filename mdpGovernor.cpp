@@ -1,6 +1,8 @@
 #include "mdpGovernor.h"
 #include "mdp/action.h"
-
+#include "mdp/mdpModel.h"
+#include "mdp/stateSpaceBuilder.h"
+#include "mdp/stateSpaceDimension.h"
 #include "processor.h"
 #include "queue.h"
 
@@ -12,18 +14,21 @@ MdpGovernor::MdpGovernor()
 	//builder.addDimension(new MdpTemperatureDimension);
 	//builder.addDimension(new MdpFrequencyDimension);
 	//builder.addDimension(new MdpMissRateDimension);
-	stateSpace = builder.getStateSpace();
+	Mdp::StateSpace *stateSpace = builder.getStateSpace();
+	model = new Mdp::MdpModel(stateSpace);
 }
 
 MdpGovernor::~MdpGovernor()
 {
-	delete stateSpace;
+	delete model;
 }
 
-void MdpGovernor::updateFreq(Processor *proc, Queue *readyQueue)
+void MdpGovernor::updateFreq(Processor * /*proc*/, Queue * /*readyQueue*/)
 {
+	#if 0
 	Queue *waitQueue = Queue::getWaitQueue(); /*FIXME ugly*/
-	Mdp::Action action = stateSpace->selectAction(proc, readyQueue, waitQueue, 0.0);
+	Mdp::Action action = model->selectAction();
+#endif
 	/*
 	double freq = 1.0;
 	switch (action)

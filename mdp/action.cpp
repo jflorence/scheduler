@@ -17,8 +17,8 @@ ActionSpace *ActionSpace::getActionSpace()
 ActionSpace::ActionSpace()
 {
 	actions = std::vector<std::string>(Action::nbOfActions);
-	actions[decreaseFreq] = "decreaseFreq";
-	actions[increaseFreq] = "increaseFreq";
+	actions[minFreq] = "minFreq";
+	actions[maxFreq] = "maxFreq";
 
 }
 
